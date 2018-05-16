@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/jio_agent_avatar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="4dp"
+            android:layout_marginTop="12dp"
+            android:src="@drawable/jioagentbot" />
+
+        <LinearLayout
+            android:id="@+id/viewholder_bubble_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/jio_agent_avatar"
+            android:layout_marginRight="30dp"
+            android:layout_toRightOf="@id/jio_agent_avatar"
+            android:background="@drawable/bg_inbox_normal"
+            android:orientation="vertical">
+
+            <com.nanorep.convesationui.views.ChatTextView
+                android:id="@+id/viewholder_remote_bubble_message_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:enable_timestamp="true" />
+            <!-- if configured, will override settings
+                app:timestamp_textSize="10sp"
+                app:timestamp_textColor="#a8a8a8"-->
+
+            <TextView
+                android:id="@+id/viewholder_bubble_readmore_textview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:foreground="?selectableItemBackground"
+                android:textColor="#007bff"
+                android:visibility="gone" />
+
+            <LinearLayout
+                android:layout_below="@id/viewholder_bubble_readmore_textview"
+                android:id="@+id/vh_remote_inner_options"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="6dp"
+                android:divider="@drawable/persistent_divider"
+                android:orientation="vertical"
+                android:showDividers="middle" />
+
+            <!--<android.support.v7.widget.RecyclerView
+                android:id="@+id/viewholder_remote_bubble_inbubble_options_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>-->
+
+    </LinearLayout>
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/viewholder_remote_bubble_outbubble_options_recycler"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/viewholder_bubble_container"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"/>
+
+</RelativeLayout>
