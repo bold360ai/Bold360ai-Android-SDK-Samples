@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fragment_article_feedbackLayout_icons"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:layout_marginEnd="16dp"
+    android:layout_marginRight="16dp"
+    android:layout_marginStart="16dp"
+    android:layout_marginLeft="16dp">
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_weight="5"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:textStyle="bold"
+        android:text="Was this article helpful?"/>
+
+
+    <ImageButton
+        android:id="@+id/fragment_article_positiveFeedback_button"
+        android:src="@drawable/upvote"
+        android:layout_margin="12dp"
+        android:layout_width="0dp"
+        android:layout_weight=".5"
+        android:layout_height="wrap_content"
+        style="@style/feedbackButtons"
+        android:background="@android:color/transparent"/>
+
+    <ImageButton
+        android:id="@+id/fragment_article_negativeFeedback_button"
+        android:layout_marginLeft="12dp"
+        android:src="@drawable/downvote"
+        android:layout_width="0dp"
+        android:layout_weight=".5"
+        android:layout_height="wrap_content"
+        style="@style/feedbackButtons"
+        android:background="@android:color/transparent"
+        android:layout_marginStart="12dp" />
+</LinearLayout>

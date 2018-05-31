@@ -1,0 +1,31 @@
+apply plugin: 'com.android.application'
+
+repositories {
+
+}
+
+android {
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
+
+    defaultConfig {
+        applicationId "nanorep.nanoandroidwidgetdemoapp"
+        minSdkVersion 16
+        targetSdkVersion 27
+        versionCode 1
+        versionName "1.8.2"
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    api 'com.nanorep.search:ui:1.8.2'
+
+    implementation "com.android.support:design:$androidSupportVer"
+}
