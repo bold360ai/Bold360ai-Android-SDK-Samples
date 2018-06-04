@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "/Users/obenoved/Documents/repository/SearchDemo/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-in/values-in.xml",
+            "outputFile": "/Users/obenoved/Documents/repository/Bold360ai-Android-SDK-Samples/SearchDemo/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-in/values-in.xml",
             "map": [
                 {
                     "source": "/Users/obenoved/.gradle/caches/transforms-1/files-1.1/ui-1.8.2.aar/394f413071ba8e4eb25b6da31f11a022/res/values-in/values-in.xml",

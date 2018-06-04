@@ -1,7 +1,7 @@
 #Internal package file, do not edit.
-#Mon May 28 11:21:50 IDT 2018
+#Mon Jun 04 10:50:58 IDT 2018
 0.baseType=DIRECTORY
-0.base=/Users/obenoved/Documents/repository/SearchDemo/app/build/intermediates/transforms/dexMerger/debug/0
+0.base=/Users/obenoved/Documents/repository/Bold360ai-Android-SDK-Samples/SearchDemo/app/build/intermediates/transforms/dexMerger/debug/0
 0.path=classes.dex
 0.set=DEX
 count=1

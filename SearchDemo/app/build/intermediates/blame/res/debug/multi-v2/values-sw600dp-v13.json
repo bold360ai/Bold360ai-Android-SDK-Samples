@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "/Users/obenoved/Documents/repository/SearchDemo/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-sw600dp-v13/values-sw600dp-v13.xml",
+            "outputFile": "/Users/obenoved/Documents/repository/Bold360ai-Android-SDK-Samples/SearchDemo/app/build/intermediates/incremental/mergeDebugResources/merged.dir/values-sw600dp-v13/values-sw600dp-v13.xml",
             "map": [
                 {
                     "source": "/Users/obenoved/.gradle/caches/transforms-1/files-1.1/design-27.1.1.aar/9530830461e8fd049eca5d95806064b6/res/values-sw600dp-v13/values-sw600dp-v13.xml",

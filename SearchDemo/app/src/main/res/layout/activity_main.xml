@@ -18,7 +18,7 @@
             <android.support.design.widget.TextInputEditText
                 android:inputType="text"
                 android:maxLines="1"
-                android:id="@+id/acoontNameId"
+                android:id="@+id/accountNameEditText"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:text=""
@@ -34,7 +34,7 @@
             <android.support.design.widget.TextInputEditText
                 android:inputType="text"
                 android:maxLines="1"
-                android:id="@+id/kbId"
+                android:id="@+id/knowledgebaseEditText"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:text=""
@@ -50,7 +50,7 @@
             <android.support.design.widget.TextInputEditText
                 android:inputType="text"
                 android:maxLines="1"
-                android:id="@+id/nr_context"
+                android:id="@+id/nrContextEditText"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
                 android:hint="nanoRep Context" />
@@ -58,7 +58,7 @@
         </android.support.design.widget.TextInputLayout>
 
         <CheckBox
-            android:id="@+id/checkbox_label_mode"
+            android:id="@+id/labelModeCheckbox"
             android:layout_marginTop="20dp"
             android:text="Label selection prior to FAQs"
             android:checked="false"
@@ -66,7 +66,7 @@
             android:layout_height="wrap_content" />
 
         <Button
-            android:id="@+id/goButton"
+            android:id="@+id/startNanorepButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
@@ -80,14 +80,14 @@
             android:gravity="bottom|center"
             android:layout_marginTop="20dp">
             <EditText
-                android:id="@+id/deepLinkArticleId"
+                android:id="@+id/deepLinkEditText"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:hint="valid article Id"
                 android:maxLines="2"
                 android:layout_marginRight="30dp"/>
             <Button
-                android:id="@+id/deepLink"
+                android:id="@+id/openDeepLinkButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="deepLink"/>
@@ -95,7 +95,7 @@
         </LinearLayout>
 
         <ProgressBar
-            android:id="@+id/pb"
+            android:id="@+id/progressBar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"

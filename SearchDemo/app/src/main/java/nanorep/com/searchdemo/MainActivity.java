@@ -1,7 +1,6 @@
 package nanorep.com.searchdemo;
 
 import android.annotation.SuppressLint;
-import android.app.ActionBar;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -10,31 +9,27 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.nanorep.nanoclient.*;
-import com.nanorep.nanoclient.Channeling.NRChanneling;
-import com.nanorep.nanoclient.Interfaces.NRExtraDataListener;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import nanorep.com.searchdemo.CustomViews.CustomChannelingView;
 import nanorep.com.searchdemo.CustomViews.CustomLikeViewIcons;
+
+import com.nanorep.nanoclient.*;
+import com.nanorep.nanoclient.Channeling.NRChanneling;
+import com.nanorep.nanoclient.Interfaces.NRExtraDataListener;
+
 import nanorep.nanowidget.Components.AbstractViews.NRCustomChannelView;
 import nanorep.nanowidget.Components.AbstractViews.NRCustomLikeView;
 import nanorep.nanowidget.Components.AbstractViews.ViewIdsFactory;
@@ -57,49 +52,22 @@ public class MainActivity extends AppCompatActivity  implements Nanorep.NanoRepW
         super.onCreate(savedInstanceState);
         setContentView(nanorep.com.searchdemo.R.layout.activity_main);
 
-        // Init and set the views:
+        final EditText accountNameEditText = findViewById(R.id.accountNameEditText);
+        final EditText knowledgeBaseEditText = findViewById(R.id.knowledgebaseEditText);
+        final EditText nrContextEditText = findViewById(R.id.nrContextEditText);
+        final CheckBox labelCheckBox = findViewById(R.id.labelModeCheckbox);
 
-        final EditText accountNameEditText = (EditText) findViewById(R.id.acoontNameId);
-        final EditText knowledgeBaseEditText = (EditText) findViewById(R.id.kbId);
-        final EditText deepLinkingArticleId = findViewById(R.id.deepLinkArticleId);
-        final Button openDeepLink = findViewById(R.id.deepLink);
-        final TextView versionName = (TextView) findViewById(R.id.versionName);
-        final EditText nrContextEditText = (EditText) findViewById(R.id.nr_context);
-        final CheckBox labelCheckBox = (CheckBox) findViewById(R.id.checkbox_label_mode);
-        final Button goButton = (Button) findViewById(R.id.goButton);
+        final EditText deepLinkingArticleId = findViewById(R.id.deepLinkEditText);
 
-        progressBar = (ProgressBar) findViewById(R.id.pb);
+        final Button startNanorepButton = findViewById(R.id.startNanorepButton);
+        final Button deepLinkButton = findViewById(R.id.openDeepLinkButton);
 
-        LinearLayout layout = (LinearLayout) findViewById(R.id.linearlayout);
-        layout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                hideKeyboard(v);
-            }
-        });
+        progressBar = findViewById(R.id.progressBar);
+        final TextView versionName = findViewById(R.id.versionName);
 
         versionName.setText(BuildConfig.VERSION_NAME);
 
-        deepLinkingArticleId.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (editable.length() > 0){
-                    openDeepLink.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-
-        openDeepLink.setOnClickListener(new View.OnClickListener() {
+        deepLinkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
@@ -107,33 +75,35 @@ public class MainActivity extends AppCompatActivity  implements Nanorep.NanoRepW
                 String knowledgeBase = knowledgeBaseEditText.getText().toString();
                 String articleId = deepLinkingArticleId.getText().toString();
 
-                AccountParams params = new AccountParams(accountName, knowledgeBase);
-
                 hideKeyboard(view);
 
                 if (accountName.length() == 0) {
-                    Toast.makeText(MainActivity.this, "Please fill in your account", Toast.LENGTH_LONG).show();
-
+                    accountNameEditText.requestFocus();
+                    accountNameEditText.setError("Please fill in your account");
                     return;
                 }
 
                 if (knowledgeBase.length() == 0) {
-                    Toast.makeText(MainActivity.this, "Please fill in your kb", Toast.LENGTH_LONG).show();
+                    knowledgeBaseEditText.requestFocus();
+                    knowledgeBaseEditText.setError("Please fill in your kb");
                     return;
                 }
 
                 if (articleId.length() == 0) {
-                    Toast.makeText(MainActivity.this, "Please fill a valid articleId", Toast.LENGTH_LONG).show();
+                    deepLinkingArticleId.requestFocus();
+                    deepLinkingArticleId.setError("Please fill a valid articleId");
                     return;
                 }
 
                 progressBar.setVisibility(View.VISIBLE);
 
+                AccountParams params = new AccountParams(accountName, knowledgeBase);
+
                 onDeepLinking(articleId, params);
             }
         });
 
-        goButton.setOnClickListener(new View.OnClickListener() {
+        startNanorepButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View button) {
 
@@ -142,25 +112,27 @@ public class MainActivity extends AppCompatActivity  implements Nanorep.NanoRepW
                 String knowledgeBase = knowledgeBaseEditText.getText().toString();
 
                 if (accountName.length() == 0) {
-                    Toast.makeText(MainActivity.this, "Please fill in your account", Toast.LENGTH_LONG).show();
+                    accountNameEditText.requestFocus();
+                    accountNameEditText.setError("Please fill in your account");
                     return;
                 }
 
                 if (knowledgeBase.length() == 0) {
-                    Toast.makeText(MainActivity.this, "Please fill in your kb", Toast.LENGTH_LONG).show();
+                    knowledgeBaseEditText.requestFocus();
+                    knowledgeBaseEditText.setError("Please fill in your kb");
                     return;
                 }
 
                 AccountParams accountParams = new AccountParams(accountName, knowledgeBase);
 
                 // Get the selected context:
-                // Example: Service: "MY-SEARCH-CONTEXT"
+                // For example: Service: "MY-SEARCH-CONTEXT"
                 String nrContext = nrContextEditText.getText().toString();
                 if(nrContext.length() > 0) {
                     accountParams.setContext(nrContext);
                 }
 
-                // Set the account params settings
+                // Set the account params properties
                 accountParams.setLabelsMode(labelCheckBox.isChecked());
                 accountParams.setOpenLinksInternally(false);
                 accountParams.setContextExclusivity(false);
@@ -168,11 +140,14 @@ public class MainActivity extends AppCompatActivity  implements Nanorep.NanoRepW
                 // Init Nanorep using the account params
                 Nanorep.initialize(accountParams, MainActivity.this);
                 Nanorep.getInstance().setHttpRequestTimeout(15);
+
                 progressBar.setVisibility(View.VISIBLE);
             }
         });
 
-        // Init the views provider for the customer - used to enable the views to be overridden by the customer
+        // Search views provider initialization - The views provider is being used to enable the views to be overridden by the customer
+        // All the views options are available at the Nanorep search documentation under "customize views"
+        // If not set, the customer can use "new SearchInjector.DefaultsInjector().getUiProvider()" to get the default views provider
 
         myViewsProvider = new SearchViewsProvider() {
             @Override
@@ -232,16 +207,22 @@ public class MainActivity extends AppCompatActivity  implements Nanorep.NanoRepW
         }
     }
 
+    /**
+     * Nanorep instance is ready to use
+     */
     @Override
     public void onConfigurationFetched() {
         progressBar.setVisibility(View.INVISIBLE);
         openMainFragment();
     }
 
+    /**
+     * Fetch bitmap from network, cache or other resources to use at the labels menu
+     * @param url
+     * @param responder
+     */
     @Override
     public void onCachedImageRequest(String url, Nanorep.NRCachedImageResponder responder) {
-
-        // fetch bitmap from network, cache, resources or any other way
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.blue_nano_icon);
         responder.onBitmapResponse(bitmap);
     }
@@ -257,9 +238,11 @@ public class MainActivity extends AppCompatActivity  implements Nanorep.NanoRepW
         openMainFragment();
     }
 
-
-    // handle channeling on the customer side
-
+    /**
+     * Handle channeling on the customer side
+     * @param channelingType
+     * @param extraData
+     */
     @Override
     public void onChannel(NRChanneling.NRChannelingType channelingType, Object extraData) {
         switch (channelingType) {
@@ -275,17 +258,27 @@ public class MainActivity extends AppCompatActivity  implements Nanorep.NanoRepW
         }
     }
 
+    /**
+     * A function that gives the ability of adding extra data to the channels
+     * @param channelDescription
+     * @param extraData
+     * @param listener
+     */
     @Override
     public void personalInfoWithExtraData(String channelDescription, String extraData, NRExtraDataListener listener) {
 
         // Extra data example:
-
         Log.i("formData", "Got form personal data request");
         Map<String, String> map = new HashMap<>();
         map.put("number", "122222");
         listener.onExtraData(map);
     }
 
+    /**
+     * A callback of a form submission
+     * @param formData
+     * @param fileUploadPaths
+     */
     @Override
     public void onSubmitSupportForm(String formData, ArrayList<String> fileUploadPaths) {
 
@@ -302,18 +295,28 @@ public class MainActivity extends AppCompatActivity  implements Nanorep.NanoRepW
         }
     }
 
-
+    /**
+     * Opens an independent fragment for a given articleId and account params
+     * @param articleId
+     * @param accountParams
+     */
     public void onDeepLinking(String articleId, AccountParams accountParams){
 
+        // Extra data sample:
         Map<String, String> map = new HashMap<>();
         map.put("number", "122222");
 
+        // DeepLinkFragment instance:
+        // deepLinkingServicesProvider injects the widget listener and the search provider to the fragment, it can be null
         DeepLinkFragment deepLinkFragment = DeepLinkFragment.newInstance(articleId, accountParams, new DeepLinkFragment.deepLinkingServicesProvider() {
+
+            // The widget listener can be null - in that case the fragment creates its own listener.
             @Override
             public Nanorep.NanoRepWidgetListener getWidgetListener() {
                 return null;
             }
 
+            // The search views provider can be null - in that case the fragment takes Nanorep's default views
             @Override
             public SearchViewsProvider getSearchViewsProvider() {
                 return myViewsProvider;
@@ -321,8 +324,8 @@ public class MainActivity extends AppCompatActivity  implements Nanorep.NanoRepW
 
         });
 
+        // sets the extra data to the fragment instance (optional)
         deepLinkFragment.setArticleExtraData(map);
-
         progressBar.setVisibility(View.INVISIBLE);
 
         getSupportFragmentManager()
