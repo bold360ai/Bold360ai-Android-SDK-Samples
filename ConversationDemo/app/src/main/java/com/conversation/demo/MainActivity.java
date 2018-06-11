@@ -82,11 +82,14 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
 
     private static final String TAG = "MainActivity";
 
-    /* Account parameters */
-    private static final String ACCOUNT_NAME = "jio";
-    private static final String API_KEY = "8bad6dea-8da4-4679-a23f-b10e62c84de8";
-    private static final String KNOWLEDGE_BASE = "Staging";
-    private static final String SERVER = "in1-1";
+
+    /* --- Please fill with valid account values --- */
+    private static final String ACCOUNT_NAME = "";
+    private static final String API_KEY = "";
+    private static final String KNOWLEDGE_BASE = "";
+    private static final String SERVER = "";
+    /*///////////////////////////////////////////////*/
+
 
     private static final String CONVERSATION_FRAGMENT_TAG = "conversation_fragment";
     public static final int HistoryPageSize = 8;
