@@ -11,7 +11,7 @@ This project hosts samples for the [Bold360AI Android SDK](https://github.com/na
 
 ### Running the ConversationDemo sample:
 1. Clone ConversationDemo repository
-2. Open MainActivity.java and update acccount parameters with valid values
+2. Open app modules gradle.build file and update acccount parameters with valid values
 3. build + run
 
 [Learn more about the SDK and how to use it](https://github.com/bold360ai/bold360ai_android_sdk/wiki/HowToUseSDK).
