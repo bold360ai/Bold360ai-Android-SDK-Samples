@@ -24,7 +24,7 @@ public class DemoCarouselInfoViewHolder extends CarouselInfoHolder {
         if (data instanceof CarouselData) {
             CarouselData carouselData = (CarouselData) data;
 
-            int iconId = carouselData.getAgentType() == AgentType.Live ? R.drawable.jioagentlive : R.drawable.mr_chatbot;
+            int iconId = carouselData.getAgentType() == AgentType.Live ? R.drawable.mr_livechat : R.drawable.mr_chatbot;
             if (getView() != null && getView().getContext() != null) {
                 this.setIcon(getView().getContext().getResources().getDrawable(iconId));
             }

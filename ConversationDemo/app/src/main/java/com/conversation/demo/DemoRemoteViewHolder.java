@@ -33,7 +33,7 @@ public class DemoRemoteViewHolder extends BubbleRemoteViewHolder {
 
         RemoteOptionsChatElement remoteChatElement = (RemoteOptionsChatElement) element;
         avatarImageView.setImageResource(remoteChatElement.getAgentType().equals(AgentType.Live) ?
-                R.drawable.jioagentlive :
+                R.drawable.mr_livechat :
                 R.drawable.mr_chatbot);
     }
 }

@@ -30,7 +30,7 @@ dependencies {
     compile "com.android.support:support-v4:$androidSupportVer"
     compile "com.android.support:cardview-v7:$androidSupportVer"
 
-    compile 'com.nanorep.conversation:ui:1.5.3.6'
+    compile 'com.nanorep.conversation:ui:1.5.3.7'
 
     compile 'com.android.support:multidex:1.0.3'
 

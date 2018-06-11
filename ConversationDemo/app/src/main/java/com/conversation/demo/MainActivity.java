@@ -67,6 +67,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import static com.nanorep.nanoengine.model.NRChannel.ChannelType.Chat;
@@ -89,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
 
     private static final String CONVERSATION_FRAGMENT_TAG = "conversation_fragment";
     public static final int HistoryPageSize = 8;
+    public static final String END_HANDOVER_SESSION = "bye bye handover";
 
     private Button startButton;
     private ProgressBar progressBar;
@@ -98,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
     private String conversationId;
     private NanoAccess nanoAccess;
 
-    private Map<String, List<HistoryItem>> chatHistory = new HashMap<>();
+    private ConcurrentHashMap<String, List<HistoryItem>> chatHistory = new ConcurrentHashMap<>();
     private Map<String, OpenConversation> openConversations = new HashMap<>();
 
     private int handoverReplyCount = 0;
@@ -194,7 +196,7 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
     }
 
     private void updateHistorySizeIndication() {
-        historySizeTextView.setText(getString(R.string.history_size_format, chatHistory.size()));
+        historySizeTextView.setText(getString(R.string.history_size_format, getHistorySize()));
     }
 
     @Override
@@ -373,8 +375,10 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
     @Override
     public void onChatLoaded() {
         // now the chat is ready to receive requests injection
-        // example: injecting a request on each return to the conversation.
-        conversationFragment.get().injectRequest("Hello, this is a sample request injection after load");
+        if(getHistorySize() == 0) {
+            // example: injecting a request on each return to the conversation.
+            conversationFragment.get().injectResponse("Hello, this is a sample text injection after load");
+        }
     }
 
     @Override
@@ -472,6 +476,8 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
 
         OnStatementResponse inputCallback = statementRequest.getCallback();
 
+        boolean endHandover = isEndHandover(statementRequest.getText());
+
         // in case request to live agent can't be delivered (in our demo- connection failure)
         if(!connectionOk){
             // pass live agent request error indication to the chat SDK
@@ -479,16 +485,20 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
                 inputCallback.onError(new NRError(NRError.LiveStatementError, NRError.ConnectionException, statementRequest));
             }
             failedStatements.add(new FailedStatementRequest(statementRequest, true));
-            return;
+
+        } else {
+
+            passHandoverResponse(statementRequest, endHandover);
         }
 
-        passHandoverResponse(statementRequest);
+        // verify handover is still on to prevent requests from being handled as handover.
+        if(endHandover) {
+            nanoAccess.endHandover();
+        }
     }
 
-    private void passHandoverResponse(@NonNull StatementRequest statementRequest) {
+    private void passHandoverResponse(@NonNull StatementRequest statementRequest, boolean endHandover) {
 
-        String inputText = statementRequest.getText();
-        boolean endHandover = inputText != null && inputText.equalsIgnoreCase("bye bye handover");
         String responseText = "";
 
         if (endHandover) {
@@ -509,10 +519,10 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
             statementRequest.getCallback().onResponse(new StatementResponse(responseText, statementRequest));
         }
 
-        if(endHandover) {
-            nanoAccess.endHandover();
-        }
+    }
 
+    private boolean isEndHandover(String inputText) {
+        return inputText != null && inputText.equalsIgnoreCase(END_HANDOVER_SESSION);
     }
 
     @Override
@@ -612,6 +622,11 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
             chatHistory.put(account,  convHistory);
         }
         return convHistory;
+    }
+
+    private int getHistorySize() {
+        String accountId = this.account != null ? this.account.getAccount() : null;
+        return accountId != null && chatHistory.containsKey(accountId) ? chatHistory.get(accountId).size() : 0;
     }
 
     @Override

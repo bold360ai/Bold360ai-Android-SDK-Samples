@@ -14,7 +14,7 @@
             android:id="@+id/startButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Start nanorep session" />
+            android:text="Start conversation" />
 
         <TextView
             android:textAppearance="?android:textAppearanceMedium"
