@@ -11,7 +11,15 @@ This project hosts samples for the [Bold360AI Android SDK](https://github.com/na
 
 ### Running the ConversationDemo sample:
 1. Clone ConversationDemo repository
-2. Open app modules gradle.build file and update acccount parameters with valid values
+2. Open gradle.build file in app module, and insert valid values for acccount parameters.
+```gradle
+buildTypes.each {
+            it.buildConfigField "String", "ACCOUNT_NAME", "\"insert value here\""
+            it.buildConfigField "String", "API_KEY", "\"insert value here\""
+            it.buildConfigField "String", "KNOWLEDGE_BASE", "\"insert value here\""
+            it.buildConfigField "String", "SERVER", "\"insert value here\""
+        }
+```
 3. build + run
 
 [Learn more about the SDK and how to use it](https://github.com/bold360ai/bold360ai_android_sdk/wiki/HowToUseSDK).
