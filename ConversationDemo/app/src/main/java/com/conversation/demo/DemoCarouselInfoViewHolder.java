@@ -1,4 +1,4 @@
-package app.com.nanoconversationdemo;
+package com.conversation.demo;
 
 import com.nanorep.convesationui.views.carousel.CarouselInfoContainer;
 import com.nanorep.convesationui.views.carousel.CarouselInfoHolder;
@@ -9,9 +9,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 
-public class CarouselInfoViewHolder extends CarouselInfoHolder {
+public class DemoCarouselInfoViewHolder extends CarouselInfoHolder {
 
-    public CarouselInfoViewHolder(@Nullable CarouselInfoContainer carouselInfoContainer) {
+    public DemoCarouselInfoViewHolder(@Nullable CarouselInfoContainer carouselInfoContainer) {
         super(carouselInfoContainer);
     }
 
@@ -24,7 +24,7 @@ public class CarouselInfoViewHolder extends CarouselInfoHolder {
         if (data instanceof CarouselData) {
             CarouselData carouselData = (CarouselData) data;
 
-            int iconId = carouselData.getAgentType() == AgentType.Live ? R.drawable.jioagentlive : R.drawable.jioagentbot;
+            int iconId = carouselData.getAgentType() == AgentType.Live ? R.drawable.jioagentlive : R.drawable.mr_chatbot;
             if (getView() != null && getView().getContext() != null) {
                 this.setIcon(getView().getContext().getResources().getDrawable(iconId));
             }

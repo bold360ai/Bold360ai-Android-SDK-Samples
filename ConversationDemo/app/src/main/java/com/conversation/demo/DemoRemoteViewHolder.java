@@ -1,4 +1,4 @@
-package app.com.nanoconversationdemo;
+package com.conversation.demo;
 
 import android.support.annotation.NonNull;
 import android.view.View;
@@ -14,10 +14,10 @@ import com.nanorep.nanoengine.model.AgentType;
 /**
  * Created by Aviran Abady on 8/25/17.
  */
-public class RemoteViewHolder extends BubbleRemoteViewHolder {
+public class DemoRemoteViewHolder extends BubbleRemoteViewHolder {
     private final ImageView avatarImageView;
 
-    public RemoteViewHolder(View view, ChatElementController controller) {
+    public DemoRemoteViewHolder(View view, ChatElementController controller) {
         super(view, controller);
         this.avatarImageView = itemView.findViewById(R.id.jio_agent_avatar);
     }
@@ -34,6 +34,6 @@ public class RemoteViewHolder extends BubbleRemoteViewHolder {
         RemoteOptionsChatElement remoteChatElement = (RemoteOptionsChatElement) element;
         avatarImageView.setImageResource(remoteChatElement.getAgentType().equals(AgentType.Live) ?
                 R.drawable.jioagentlive :
-                R.drawable.jioagentbot);
+                R.drawable.mr_chatbot);
     }
 }
