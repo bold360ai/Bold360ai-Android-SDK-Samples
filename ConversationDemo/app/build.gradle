@@ -3,6 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 27
     buildToolsVersion '27.0.3'
+
     defaultConfig {
         applicationId "app.com.nanoconversationdemo"
         minSdkVersion 16
@@ -12,10 +13,18 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        buildTypes.each {
+            it.buildConfigField "String", "ACCOUNT_NAME", "\"\""
+            it.buildConfigField "String", "API_KEY", "\"\""
+            it.buildConfigField "String", "KNOWLEDGE_BASE", "\"\""
+            it.buildConfigField "String", "SERVER", "\"\""
         }
     }
 }

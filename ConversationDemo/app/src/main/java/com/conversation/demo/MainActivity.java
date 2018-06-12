@@ -84,10 +84,10 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
 
 
     /* --- Please fill with valid account values --- */
-    private static final String ACCOUNT_NAME = "";
-    private static final String API_KEY = "";
-    private static final String KNOWLEDGE_BASE = "";
-    private static final String SERVER = "";
+    private static final String ACCOUNT_NAME = BuildConfig.ACCOUNT_NAME;
+    private static final String API_KEY = BuildConfig.API_KEY;
+    private static final String KNOWLEDGE_BASE = BuildConfig.KNOWLEDGE_BASE;
+    private static final String SERVER = BuildConfig.SERVER;
     /*///////////////////////////////////////////////*/
 
 
@@ -170,8 +170,7 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startButton.setEnabled(false);
-                progressBar.setVisibility(View.VISIBLE);
+                setLoadingDisplay(true);
                 initNanorep();
             }
         });
@@ -180,8 +179,7 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
             @Override
             public void onBackStackChanged() {
                 if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
-                    progressBar.setVisibility(View.INVISIBLE);
-                    startButton.setEnabled(true);
+                    setLoadingDisplay(false);
                     updateHistorySizeIndication();
                     if(conversationFragment != null) {
                         conversationFragment.clear();
@@ -189,6 +187,11 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
                 }
             }
         });
+    }
+
+    private void setLoadingDisplay(boolean isLoading) {
+        progressBar.setVisibility(isLoading ? View.VISIBLE : View.INVISIBLE);
+        startButton.setEnabled(!isLoading);
     }
 
     @Override
@@ -218,6 +221,13 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
     }
 
     public void initNanorep() {
+
+        if(ACCOUNT_NAME.isEmpty()){
+            setLoadingDisplay(false);
+            Toast.makeText(this, "Please provide valid account values", Toast.LENGTH_LONG).show();
+            return;
+        }
+
         Map<String, String> conversationContext = new HashMap<>();
         account = new NRAccount(ACCOUNT_NAME, API_KEY,
                 KNOWLEDGE_BASE, SERVER, conversationContext);
