@@ -1,6 +1,6 @@
 
-### Running the ConversationDemo sample:
-1. Clone the repository
+### How to run the ConversationDemo:
+1. Download the demo project
 2. Navigate into "ConversationDemo\app" and open gradle.build file. Insert valid values for acccount parameters in the proper places.
 ```gradle
 buildTypes.each {
