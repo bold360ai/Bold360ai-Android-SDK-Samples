@@ -19,6 +19,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.nanorep.convesationui.ConversationViewsProvider;
 import com.nanorep.convesationui.adapter.ConversationInjector;
 import com.nanorep.convesationui.fragments.NRConversationFragment;
@@ -27,6 +28,7 @@ import com.nanorep.convesationui.structure.OptionActionListener;
 import com.nanorep.convesationui.structure.UiConfigurations;
 import com.nanorep.convesationui.structure.history.HistoryHandler;
 import com.nanorep.convesationui.structure.history.HistoryItem;
+import com.nanorep.convesationui.structure.history.HistoryItemOrigin;
 import com.nanorep.convesationui.structure.history.HistoryListener;
 import com.nanorep.convesationui.structure.history.HistoryProvider;
 import com.nanorep.convesationui.viewholder.base.ChatElementViewHolder;
@@ -54,6 +56,7 @@ import com.nanorep.nanoengine.model.conversation.Conversation;
 import com.nanorep.nanoengine.model.conversation.statement.OnStatementResponse;
 import com.nanorep.nanoengine.model.conversation.statement.StatementRequest;
 import com.nanorep.nanoengine.model.conversation.statement.StatementResponse;
+import com.nanorep.nanoengine.model.conversation.statement.StatementScope;
 import com.nanorep.sdkcore.types.NRError;
 import com.nanorep.sdkcore.types.ViewHolder;
 import com.nanorep.sdkcore.utils.network.ConnectivityReceiver;
@@ -63,17 +66,20 @@ import org.jetbrains.annotations.Nullable;
 
 import java.lang.ref.SoftReference;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.nanorep.nanoengine.model.NRChannel.ChannelType.Chat;
 import static com.nanorep.nanoengine.model.NRChannel.ChannelType.PhoneNumber;
 import static com.nanorep.nanoengine.model.NRChannel.ChannelType.Ticket;
 import static com.nanorep.nanoengine.model.ResponseModelsKt.isConversationError;
+import static com.nanorep.sdkcore.model.CommunicationModelsKt.StatusOk;
 import static com.nanorep.sdkcore.utils.UtilsKt.getPx;
 import static com.nanorep.sdkcore.utils.UtilsKt.snack;
 import static com.nanorep.sdkcore.utils.UtilsKt.toast;
@@ -104,6 +110,8 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
     private NanoAccess nanoAccess;
 
     private ConcurrentHashMap<String, List<HistoryItem>> chatHistory = new ConcurrentHashMap<>();
+    final Object historySync = new Object(); // in use to block multi access to history from different actions.
+
     private Map<String, OpenConversation> openConversations = new HashMap<>();
 
     private int handoverReplyCount = 0;
@@ -135,18 +143,22 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
     private OnStatementResponse onStatementResponse = new OnStatementResponse() {
         @Override
         public void onResponse(@NotNull StatementResponse response) {
-
-            /* -> we're not removing from history anymore, so no need to insert it
-            // re-inserting failed request to history, since we removed it from the history when it got failed
-            StatementRequest statementRequest = response.getStatementRequest();
-            if(statementRequest != null) {
-                historyHandler.addToHistory(new HistoryItem(statementRequest.getStatement(),
-                        statementRequest.getTimestamp(), HistoryItemOrigin.OUTGOING, StatusOk));
-
-            }*/
-
             if(conversationFragment.get() != null){
                 conversationFragment.get().onResponse(response);
+
+            } else {
+                // in case re-post of failed statements was done while chat was not loaded,
+                // the app is responsible to update requests status and insert responses
+                // to the history storage
+
+                // update request history item with the new status.
+                StatementRequest statementRequest = response.getStatementRequest();
+                if(statementRequest != null) {
+                    historyHandler.updateHistory(statementRequest.getTimestamp(), statementRequest.getTimestamp(), StatusOk);
+                }
+                // add response history item to the history storage
+                historyHandler.addToHistory(new HistoryItem(new Gson().toJson(response),
+                        response.getTimestamp(), HistoryItemOrigin.INCOMING, StatusOk));
             }
         }
 
@@ -237,14 +249,14 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
                 .speechEnable(true).enableMultiRequestsOnLiveAgent(false)
                 .enableOfflineMultiRequests(true)
                 .timestampConfig(true, new TimestampStyle("EEE, HH:mm",
-                    getPx(10), Color.parseColor("#a8a8a8"), null) ).
-                datestamp(true, new FriendlyDatestampFormatFactory(this));
+                        getPx(10), Color.parseColor("#a8a8a8"), null) ).
+                        datestamp(true, new FriendlyDatestampFormatFactory(this));
 
         //-> to configure the default text configuration to all bubbles text add something like the following:
         //settings.textStyleConfig(new StyleConfig(getPx(23), Color.BLUE, null));
 
         this.nanoAccess = NanoRep.initializeConversation(account, this,
-                                    fetchAccountConversationData(account.getAccount()), settings);
+                fetchAccountConversationData(account.getAccount()), settings);
     }
 
     private Conversation fetchAccountConversationData(String account) {
@@ -388,9 +400,9 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
     @Override
     public void onChatLoaded() {
         // now the chat is ready to receive requests injection
-        if(getHistorySize() == 0) {
+        if(getHistorySize() <= 1) { // the welcome message was already inserted to the history
             // example: injecting a request on each return to the conversation.
-            conversationFragment.get().injectResponse("Hello, this is a sample text injection after load");
+            conversationFragment.get().injectResponse("Hello, this is a sample text injection after load", StatementScope.SystemScope());
         }
     }
 
@@ -398,7 +410,7 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
     public void onError(NRError error) {
         progressBar.setVisibility(View.INVISIBLE);
 
-         switch (error.getErrorCode()){
+        switch (error.getErrorCode()){
 
             case NRError.ConversationCreationError:
 
@@ -431,14 +443,15 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
                     notifyStatementError(error);
                 }
                 StatementRequest statementRequest = (StatementRequest) error.getData();
-
+                if(statementRequest != null) {
                 /*
                 Log.d("MainFragment", "removing failed request "+statementRequest.getStatement() +" from History");
                 historyHandler.removeFromHistory(statementRequest.getTimestamp());
                  */
 
-                Log.d("MainFragment", "adding "+statementRequest.getStatement() +" to app pending");
-                failedStatements.add(new FailedStatementRequest(statementRequest));
+                    Log.d("MainFragment", "adding "+statementRequest.getStatement() +" to app pending");
+                    failedStatements.add(new FailedStatementRequest(statementRequest));
+                }
                 break;
 
             default:
@@ -464,8 +477,11 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
 
     @SuppressLint("ResourceType")
     private void notifyError(@NotNull NRError error, String s, int backgroundColor) {
+        View snackView = conversationFragment == null || conversationFragment.get() == null || conversationFragment.get().getView() == null ?
+                getWindow().getDecorView() : conversationFragment.get().getView();
+
         try {
-            snack(conversationFragment.get().getView(),
+            snack(snackView,
                     s + error.getReason(),
                     1000, -1, Gravity.CENTER, new int[]{}, backgroundColor);
         } catch (Exception ignored) {
@@ -477,10 +493,18 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
         handoverReplyCount = 0;
         if(!connectionOk){
             nanoAccess.endHandover();
-            conversationFragment.get().injectResponse("Failed to initiate live chat, please check your internet connection");
+            // response scope should be provided indicate the chat agent status while statement were injected.
+            // (see StatementScope for available scopes)
+            conversationFragment.get().injectResponse("Failed to initiate live chat, please check your internet connection",
+                    StatementScope.HandoverScope());
         } else {
-            conversationFragment.get().injectResponse("Hey, my name is Bob, how can I help?");
+            conversationFragment.get().injectResponse("Hey, my name is Bob, how can I help?",
+                    StatementScope.HandoverScope());
         }
+    }
+
+    private boolean isEndHandover(String inputText) {
+        return inputText != null && inputText.equalsIgnoreCase(END_HANDOVER_SESSION);
     }
 
     @Override
@@ -534,10 +558,6 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
 
     }
 
-    private boolean isEndHandover(String inputText) {
-        return inputText != null && inputText.equalsIgnoreCase(END_HANDOVER_SESSION);
-    }
-
     @Override
     public void onInAppNavigation(String navTo) {
         Toast.makeText(this, navTo, Toast.LENGTH_SHORT).show();
@@ -554,7 +574,11 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
         new Thread(new Runnable() {
             @Override
             public void run() {
-                final List<HistoryItem> history = getHistoryForAccount(account.getAccount(), from, older);
+                final List<HistoryItem> history;
+
+                synchronized (historySync) {
+                    history = Collections.unmodifiableList(getHistoryForAccount(account.getAccount(), from, older));
+                }
 
                 runOnUiThread(new Runnable() {
                     @Override
@@ -567,8 +591,10 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
     }
 
     private List<HistoryItem> getHistoryForAccount(String account, int fromIdx, boolean older) {
-        ArrayList<HistoryItem> accountHistory = (ArrayList<HistoryItem>) chatHistory.get(account);
-        if(accountHistory == null) return new ArrayList<>();
+        if(!chatHistory.containsKey(account)) return new ArrayList<>();
+
+        // to prevent Concurrent exception
+        CopyOnWriteArrayList<HistoryItem> accountHistory = new CopyOnWriteArrayList<>(chatHistory.get(account));
 
         if(fromIdx == -1) {
             fromIdx = accountHistory.size() - 1;
@@ -643,7 +669,7 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
     }
 
     @Override
-    public void onPhoneNumberNavigation(String phoneNumber) {
+    public void onPhoneNumberNavigation(@NonNull String phoneNumber) {
         try {
             Intent intent = new Intent(Intent.ACTION_DIAL);
             intent.setData(Uri.parse("tel:" + phoneNumber));
@@ -661,10 +687,10 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
                 nanoAccess.createConversation(this.account);
 
             } else {
-                // needed to refresh previously chat items (exp: carousel images)
-                if(conversationFragment != null && conversationFragment.get() != null) {
+                //!! there is no need to activate refresh on NRConversationFragment, it's done internally
+                /*if(conversationFragment != null && conversationFragment.get() != null) {
                     conversationFragment.get().refresh();
-                }
+                }*/
 
                 // post pending statements until disconnection
                 postFailedStatements();
@@ -715,7 +741,7 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
             // in case carousel timestamp needs to be changed:
             // carouselInfoContainer.setTimestampStyle(new TimestampStyle("hh:mm", getPx(12), Color.parseColor("#a8a8a8"), null));
 
-           // carouselInfoContainer.setIconTextGap(getPx(8)); // change the margin between the bot icon and the bubble text
+            // carouselInfoContainer.setIconTextGap(getPx(8)); // change the margin between the bot icon and the bubble text
 
             return carouselInfoContainer;
         }
