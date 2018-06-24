@@ -19,7 +19,7 @@ public class DemoRemoteViewHolder extends BubbleRemoteViewHolder {
 
     public DemoRemoteViewHolder(View view, ChatElementController controller) {
         super(view, controller);
-        this.avatarImageView = itemView.findViewById(R.id.jio_agent_avatar);
+        this.avatarImageView = itemView.findViewById(R.id.demo_agent_avatar);
     }
 
 

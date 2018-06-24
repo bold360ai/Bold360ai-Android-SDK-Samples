@@ -5,7 +5,7 @@
     android:layout_height="wrap_content">
 
     <ImageView
-        android:id="@+id/jio_agent_avatar"
+        android:id="@+id/demo_agent_avatar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -26,10 +26,10 @@
         android:layout_marginRight="30dp"
         android:padding="0dp"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
-        app:layout_constraintLeft_toRightOf="@id/jio_agent_avatar"
+        app:layout_constraintLeft_toRightOf="@id/demo_agent_avatar"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintStart_toEndOf="@id/jio_agent_avatar"
-        app:layout_constraintTop_toTopOf="@id/jio_agent_avatar"
+        app:layout_constraintStart_toEndOf="@id/demo_agent_avatar"
+        app:layout_constraintTop_toTopOf="@id/demo_agent_avatar"
         app:layout_constraintWidth_default="wrap">
 
         <LinearLayout

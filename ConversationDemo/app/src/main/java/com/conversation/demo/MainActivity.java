@@ -246,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
         account.setEntities(new String[]{"SUBSCRIBERS"});
 
         ConversationSettings settings = new ConversationSettings().disableFeedback()
-                .speechEnable(true).enableMultiRequestsOnLiveAgent(false)
+                .speechEnable(true).enableMultiRequestsOnLiveAgent(true)
                 .enableOfflineMultiRequests(true)
                 .timestampConfig(true, new TimestampStyle("EEE, HH:mm",
                         getPx(10), Color.parseColor("#a8a8a8"), null) ).
@@ -565,7 +565,14 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
 
     @Override
     public boolean onUrlNavigation(String url) {
-        Toast.makeText(this, url, Toast.LENGTH_SHORT).show();
+        // sample url handling:
+        if(connectionOk){
+            final Intent intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse(url));
+            this.startActivity(intent);
+        } else {
+            Toast.makeText(this, "Connection is not available for opening url: "+url, Toast.LENGTH_SHORT).show();
+        }
+
         return connectionOk; // returns if the link could be activated
     }
 
@@ -580,12 +587,22 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
                     history = Collections.unmodifiableList(getHistoryForAccount(account.getAccount(), from, older));
                 }
 
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        listener.onReady(from, older, history);
+                if (history.size() > 0) {
+                    try {
+                        Thread.sleep(1000); // simulate async history fetching
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
-                });
+                }
+
+                if(!isFinishing()) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            listener.onReady(from, older, history);
+                        }
+                    });
+                }
             }
         }).start();
     }
@@ -725,9 +742,9 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
         @Nullable
         @Override
         public ViewHolder getCarouselInfoHolder(@NotNull CarouselData carouselData, @Nullable CarouselInfoContainer carouselInfoContainer) {
-            DemoCarouselInfoViewHolder jioCarouselInfoViewHolder = new DemoCarouselInfoViewHolder(carouselInfoContainer);
-            jioCarouselInfoViewHolder.update(carouselData);
-            return jioCarouselInfoViewHolder;
+            DemoCarouselInfoViewHolder demoCarouselInfoViewHolder = new DemoCarouselInfoViewHolder(carouselInfoContainer);
+            demoCarouselInfoViewHolder.update(carouselData);
+            return demoCarouselInfoViewHolder;
         }
 
         @NotNull
