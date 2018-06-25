@@ -496,7 +496,7 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
             // response scope should be provided indicate the chat agent status while statement were injected.
             // (see StatementScope for available scopes)
             conversationFragment.get().injectResponse("Failed to initiate live chat, please check your internet connection",
-                    StatementScope.HandoverScope());
+                    StatementScope.SystemScope());
         } else {
             conversationFragment.get().injectResponse("Hey, my name is Bob, how can I help?",
                     StatementScope.HandoverScope());
