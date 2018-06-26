@@ -116,7 +116,7 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
 
     private int handoverReplyCount = 0;
     private ConnectivityReceiver connectivityReceiver = new ConnectivityReceiver();
-    private ConcurrentLinkedQueue<FailedStatementRequest> failedStatements = new ConcurrentLinkedQueue<>();
+    private ConcurrentLinkedQueue<StatementRequest> failedStatements = new ConcurrentLinkedQueue<>();
     private SoftReference<NRConversationFragment> conversationFragment;
     private HistoryHandler historyHandler;
 
@@ -450,7 +450,7 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
                  */
 
                     Log.d("MainFragment", "adding "+statementRequest.getStatement() +" to app pending");
-                    failedStatements.add(new FailedStatementRequest(statementRequest));
+                    failedStatements.add(statementRequest);
                 }
                 break;
 
@@ -521,7 +521,7 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
             if(inputCallback != null) {
                 inputCallback.onError(new NRError(NRError.LiveStatementError, NRError.ConnectionException, statementRequest));
             }
-            failedStatements.add(new FailedStatementRequest(statementRequest, true));
+            failedStatements.add(statementRequest);
 
         } else {
 
@@ -717,12 +717,12 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
 
     private void postFailedStatements() {
 
-        for(FailedStatementRequest request : failedStatements){
+        for(StatementRequest request : failedStatements){
             if(!connectionOk) break; // no point of trying to re-send
 
             Log.d("MainFragment", "re-sending previously failed request: "+request.getStatement());
 
-            if(request.isLive){
+            if(request.getScope() instanceof StatementScope.LiveHandoverScope){
                 onChatHandoverInput(request);
 
             } else {
@@ -844,19 +844,6 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
     }
 
 //////////////////////////////////////
-
-    static class FailedStatementRequest extends StatementRequest{
-        boolean isLive = false;
-
-        FailedStatementRequest(StatementRequest statement){
-            super(statement);
-        }
-
-        FailedStatementRequest(StatementRequest statement, boolean isLive) {
-            super(statement);
-            this.isLive = isLive;
-        }
-    }
 
 
     static class OpenConversation{
