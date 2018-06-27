@@ -11,6 +11,7 @@ import com.nanorep.nanoclient.Response.NRConfiguration;
 
 import nanorep.com.searchdemo.R;
 import nanorep.nanowidget.Components.AbstractViews.NRCustomLikeView;
+import nanorep.nanowidget.SearchViewsProvider;
 
 /**
  * Created by obenoved on 18/03/2018.
@@ -22,8 +23,8 @@ public class CustomLikeViewIcons extends NRCustomLikeView {
     private ImageButton mDislikeButton;
     private boolean mLikeSelection;
 
-    public CustomLikeViewIcons(Context context) {
-        super(context);
+    public CustomLikeViewIcons(Context context, SearchViewsProvider viewsProvider) {
+        super(context, viewsProvider);
         LayoutInflater.from(context).inflate(R.layout.custom_like_view_icons, this);
     }
 

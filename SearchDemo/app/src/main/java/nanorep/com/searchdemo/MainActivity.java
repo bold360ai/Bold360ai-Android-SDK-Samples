@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity  implements Nanorep.NanoRepW
 
             @Override
             public NRCustomLikeView getLikeView(Context context) {
-                return new CustomLikeViewIcons(context);
+                return new CustomLikeViewIcons(context, this);
             }
 
             @Override
@@ -196,6 +196,16 @@ public class MainActivity extends AppCompatActivity  implements Nanorep.NanoRepW
             @Override
             public int getLabelItemTitleLayout() {
                 return R.layout.custom_title_item_label;
+            }
+
+            @Override
+            public boolean showChannelConfirmationDialogs(NRChanneling channeling) {
+                return false;
+            }
+
+            @Override
+            public boolean showFeedbackConfirmationDialogs() {
+                return false;
             }
         };
     }
