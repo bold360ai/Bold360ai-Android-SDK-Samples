@@ -223,7 +223,9 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
 
         connectivityReceiver.unregister(this);
 
-        conversationFragment.clear();
+        if(conversationFragment != null) {
+            conversationFragment.clear();
+        }
 
         try {
             nanoAccess.setConversationListener(null);
