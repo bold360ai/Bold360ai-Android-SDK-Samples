@@ -277,37 +277,6 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
         return conversation;
     }
 
-    /**
-     * called when conversationId is updated.
-     * this may happen more than once in case the conversation became invalid, so in order
-     * to prevent multiple "NRConversationFragment" we tagged the fragment and we look for it
-     * when we get this event.
-     *
-     * @param conversationId
-     */
-    @Override
-    public void onConversationIdUpdated(String conversationId) {
-        Log.i("conversationId", conversationId);
-        this.conversationId = conversationId;
-
-        if(pendingConversationCreation){
-            pendingConversationCreation = false;
-            // in case conversation was created, the fragment needs a refresh to update the styles
-            // as defined in the configurations
-            if(conversationFragment != null && conversationFragment.get() != null) {
-                conversationFragment.get().refresh();
-            }
-            postFailedStatements();
-        }
-
-        String accountId = this.account.getAccount();
-        if(!openConversations.containsKey(accountId)){
-            openConversations.put(accountId, new OpenConversation(accountId, conversationId, AgentType.Bot));
-        }
-
-        openConversationFragment();
-    }
-
     private void openConversationFragment() {
 
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -345,6 +314,80 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
     }
 
     @Override
+    public void connectionChanged(boolean isConnected) {
+        this.connectionOk = isConnected;
+        if(isConnected){
+            if(pendingConversationCreation){
+                nanoAccess.createConversation(this.account);
+
+            } else {
+                //!! there is no need to activate refresh on NRConversationFragment, it's done internally
+                /*if(conversationFragment != null && conversationFragment.get() != null) {
+                    conversationFragment.get().refresh();
+                }*/
+
+                // post pending statements until disconnection
+                postFailedStatements();
+            }
+        }
+    }
+
+    private void postFailedStatements() {
+
+        for(StatementRequest request : failedStatements){
+            if(!connectionOk) break; // no point of trying to re-send
+
+            Log.d("MainFragment", "re-sending previously failed request: "+request.getStatement());
+
+            if(request.getScope() instanceof StatementScope.LiveHandoverScope){
+                onChatHandoverInput(request);
+
+            } else {
+                //!! a MUST, otherwise requests will be sent with previous or 0 id and will fail
+                request.conversationId(conversationId);
+
+                nanoAccess.postStatement(request, onStatementResponse);
+            }
+
+            failedStatements.remove(request);
+        }
+    }
+
+
+//<editor-fold desc=">>>>>>>>>  ConversationStateListener Impl  <<<<<<<<<">
+
+    /**
+     * called when conversationId is updated.
+     * this may happen more than once in case the conversation became invalid, so in order
+     * to prevent multiple "NRConversationFragment" we tagged the fragment and we look for it
+     * when we get this event.
+     *
+     * @param conversationId
+     */
+    @Override
+    public void onConversationIdUpdated(String conversationId) {
+        Log.i("conversationId", conversationId);
+        this.conversationId = conversationId;
+
+        if(pendingConversationCreation){
+            pendingConversationCreation = false;
+            // in case conversation was created, the fragment needs a refresh to update the styles
+            // as defined in the configurations
+            if(conversationFragment != null && conversationFragment.get() != null) {
+                conversationFragment.get().refresh();
+            }
+            postFailedStatements();
+        }
+
+        String accountId = this.account.getAccount();
+        if(!openConversations.containsKey(accountId)){
+            openConversations.put(accountId, new OpenConversation(accountId, conversationId, AgentType.Bot));
+        }
+
+        openConversationFragment();
+    }
+
+    @Override
     public void onConversationTermination(Conversation conversation) {
 
         OpenConversation openConversation;
@@ -357,10 +400,7 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
             openConversation = new OpenConversation(accountId, conversation.getId(), conversation.getAgentType());
             openConversations.put(accountId, openConversation);
         }
-
     }
-
-
 
     @Override
     public void onMissingEntities(StatementResponse response, NRConversationEngine.MissingEntitiesHandler handler) {
@@ -374,6 +414,16 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
         handler.onMissingEntitiesReady(missingEntities);
     }
 
+    private Entity createEntity(String entityName) {
+        Entity entity = new Entity(Entity.PERSISTENT, Entity.NUMBER, "3", entityName, "1");
+        for (int i = 0; i < 3; i++) {
+            Property property = new Property(Entity.NUMBER, String.valueOf(i) + "234", "SUBSCRIBER");
+            property.setName(property.getValue());
+            property.addProperty(new Property(Entity.NUMBER, String.valueOf(i) + "234", "ID"));
+            entity.addProperty(property);
+        }
+        return entity;
+    }
 
     @Override
     public void handlePersonalInformation(String id, NRPrivateInfo privateInfo) {
@@ -387,26 +437,80 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
         privateInfo.getValueReady().privateDataCallback("1,000$", null);
     }
 
-
-    private Entity createEntity(String entityName) {
-        Entity entity = new Entity(Entity.PERSISTENT, Entity.NUMBER, "3", entityName, "1");
-        for (int i = 0; i < 3; i++) {
-            Property property = new Property(Entity.NUMBER, String.valueOf(i) + "234", "SUBSCRIBER");
-            property.setName(property.getValue());
-            property.addProperty(new Property(Entity.NUMBER, String.valueOf(i) + "234", "ID"));
-            entity.addProperty(property);
+    @Override
+    public void onInitializeChatHandover() {
+        handoverReplyCount = 0;
+        if(!connectionOk){
+            nanoAccess.endHandover();
+            // response scope should be provided indicate the chat agent status while statement were injected.
+            // (see StatementScope for available scopes)
+            conversationFragment.get().injectResponse("Failed to initiate live chat, please check your internet connection",
+                    StatementScope.SystemScope());
+        } else {
+            conversationFragment.get().injectResponse("Hey, my name is Bob, how can I help?",
+                    StatementScope.HandoverScope());
         }
-        return entity;
     }
 
     @Override
-    public void onChatLoaded() {
-        // now the chat is ready to receive requests injection
-        if(getHistorySize() <= 1) { // the welcome message was already inserted to the history
-            // example: injecting a request on each return to the conversation.
-            conversationFragment.get().injectResponse("Hello, this is a sample text injection after load", StatementScope.SystemScope());
+    public void onChatHandoverInput(@NonNull StatementRequest statementRequest) {
+        if(nanoAccess == null) return;
+
+        OnStatementResponse inputCallback = statementRequest.getCallback();
+
+        boolean endHandover = isEndHandover(statementRequest.getText());
+
+        // in case request to live agent can't be delivered (in our demo- connection failure)
+        if(!connectionOk){
+            // pass live agent request error indication to the chat SDK
+            if(inputCallback != null) {
+                inputCallback.onError(new NRError(NRError.LiveStatementError, NRError.ConnectionException, statementRequest));
+            }
+            failedStatements.add(statementRequest);
+
+        } else {
+
+            passHandoverResponse(statementRequest, endHandover);
+        }
+
+        // verify handover is still on to prevent requests from being handled as handover.
+        if(endHandover) {
+            nanoAccess.endHandover();
         }
     }
+
+    private boolean isEndHandover(String inputText) {
+        return inputText != null && inputText.equalsIgnoreCase(END_HANDOVER_SESSION);
+    }
+
+    private void passHandoverResponse(@NonNull StatementRequest statementRequest, boolean endHandover) {
+
+        String responseText = "";
+
+        if (endHandover) {
+            responseText = "Bye - Handover complete";
+
+        } else {
+            //!- for long text test:
+            String longText = "John Perry did two things on his 75th birthday. First, he visited his wife's grave. Then he joined the army.\n" +
+                    "The good news is that humanity finally made it into interstellar space. The bad news is that planets fit to live on are scarce - and alien races willing to fight us for them are common. So, we fight, to defend Earth and to stake our own claim to planetary real estate. Far from Earth, the war has been going on for decades: brutal, bloody, unyielding.\n" +
+                    "\n" +
+                    "Earth itself is a backwater. The bulk of humanity's resources are in the hands of the Colonial Defense Force. Everybody knows that when you reach retirement age, you can join the CDF. They don't want young people; they want people who carry the knowledge and skills of decades of living. You'll be taken off Earth and never allowed to return. You'll serve two years at the front. And if you survive, you'll be given a generous homestead stake of your own, on one of our hard-won colony planets. ";
+            String postText = handoverReplyCount == 1 ? longText : " ";
+            responseText = postText +"Response (" + String.valueOf(++handoverReplyCount) + ")";
+        }
+
+        // pass live agent response to the chat SDK
+        if(statementRequest.getCallback() != null){
+            statementRequest.getCallback().onResponse(new StatementResponse(responseText, statementRequest));
+        }
+
+    }
+
+//</editor-fold>
+
+
+//<editor-fold desc=">>>>>>>>> Error handling and ErrorListener Impl  <<<<<<<<<">
 
     @Override
     public void onError(NRError error) {
@@ -490,74 +594,18 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
         }
     }
 
-    @Override
-    public void onInitializeChatHandover() {
-        handoverReplyCount = 0;
-        if(!connectionOk){
-            nanoAccess.endHandover();
-            // response scope should be provided indicate the chat agent status while statement were injected.
-            // (see StatementScope for available scopes)
-            conversationFragment.get().injectResponse("Failed to initiate live chat, please check your internet connection",
-                    StatementScope.SystemScope());
-        } else {
-            conversationFragment.get().injectResponse("Hey, my name is Bob, how can I help?",
-                    StatementScope.HandoverScope());
-        }
-    }
+//</editor-fold>
 
-    private boolean isEndHandover(String inputText) {
-        return inputText != null && inputText.equalsIgnoreCase(END_HANDOVER_SESSION);
-    }
+
+//<editor-fold desc=">>>>>>>>>  ChatEventListener impl  <<<<<<<<<">
 
     @Override
-    public void onChatHandoverInput(@NonNull StatementRequest statementRequest) {
-        if(nanoAccess == null) return;
-
-        OnStatementResponse inputCallback = statementRequest.getCallback();
-
-        boolean endHandover = isEndHandover(statementRequest.getText());
-
-        // in case request to live agent can't be delivered (in our demo- connection failure)
-        if(!connectionOk){
-            // pass live agent request error indication to the chat SDK
-            if(inputCallback != null) {
-                inputCallback.onError(new NRError(NRError.LiveStatementError, NRError.ConnectionException, statementRequest));
-            }
-            failedStatements.add(statementRequest);
-
-        } else {
-
-            passHandoverResponse(statementRequest, endHandover);
+    public void onChatLoaded() {
+        // now the chat is ready to receive requests injection
+        if(getHistorySize() <= 1) { // the welcome message was already inserted to the history
+            // example: injecting a request on each return to the conversation.
+            conversationFragment.get().injectResponse("Hello, this is a sample text injection after load", StatementScope.SystemScope());
         }
-
-        // verify handover is still on to prevent requests from being handled as handover.
-        if(endHandover) {
-            nanoAccess.endHandover();
-        }
-    }
-
-    private void passHandoverResponse(@NonNull StatementRequest statementRequest, boolean endHandover) {
-
-        String responseText = "";
-
-        if (endHandover) {
-            responseText = "Bye - Handover complete";
-
-        } else {
-            //!- for long text test:
-            String longText = "John Perry did two things on his 75th birthday. First, he visited his wife's grave. Then he joined the army.\n" +
-                    "The good news is that humanity finally made it into interstellar space. The bad news is that planets fit to live on are scarce - and alien races willing to fight us for them are common. So, we fight, to defend Earth and to stake our own claim to planetary real estate. Far from Earth, the war has been going on for decades: brutal, bloody, unyielding.\n" +
-                    "\n" +
-                    "Earth itself is a backwater. The bulk of humanity's resources are in the hands of the Colonial Defense Force. Everybody knows that when you reach retirement age, you can join the CDF. They don't want young people; they want people who carry the knowledge and skills of decades of living. You'll be taken off Earth and never allowed to return. You'll serve two years at the front. And if you survive, you'll be given a generous homestead stake of your own, on one of our hard-won colony planets. ";
-            String postText = handoverReplyCount == 1 ? longText : " ";
-            responseText = postText +"Response (" + String.valueOf(++handoverReplyCount) + ")";
-        }
-
-        // pass live agent response to the chat SDK
-        if(statementRequest.getCallback() != null){
-            statementRequest.getCallback().onResponse(new StatementResponse(responseText, statementRequest));
-        }
-
     }
 
     @Override
@@ -577,6 +625,22 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
 
         return connectionOk; // returns if the link could be activated
     }
+
+    @Override
+    public void onPhoneNumberNavigation(@NonNull String phoneNumber) {
+        try {
+            Intent intent = new Intent(Intent.ACTION_DIAL);
+            intent.setData(Uri.parse("tel:" + phoneNumber));
+            startActivity(intent);
+        } catch (ActivityNotFoundException e) {
+
+        }
+    }
+
+//</editor-fold>
+
+
+//<editor-fold desc=">>>>>>>>>  History handling and HistoryProvider Impl  <<<<<<<<<">
 
     @Override
     public void fetchHistory(final int from, final boolean older, final HistoryListener listener) {
@@ -687,58 +751,10 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
         return accountId != null && chatHistory.containsKey(accountId) ? chatHistory.get(accountId).size() : 0;
     }
 
-    @Override
-    public void onPhoneNumberNavigation(@NonNull String phoneNumber) {
-        try {
-            Intent intent = new Intent(Intent.ACTION_DIAL);
-            intent.setData(Uri.parse("tel:" + phoneNumber));
-            startActivity(intent);
-        } catch (ActivityNotFoundException e) {
+//</editor-fold>
 
-        }
-    }
 
-    @Override
-    public void connectionChanged(boolean isConnected) {
-        this.connectionOk = isConnected;
-        if(isConnected){
-            if(pendingConversationCreation){
-                nanoAccess.createConversation(this.account);
-
-            } else {
-                //!! there is no need to activate refresh on NRConversationFragment, it's done internally
-                /*if(conversationFragment != null && conversationFragment.get() != null) {
-                    conversationFragment.get().refresh();
-                }*/
-
-                // post pending statements until disconnection
-                postFailedStatements();
-            }
-        }
-    }
-
-    private void postFailedStatements() {
-
-        for(StatementRequest request : failedStatements){
-            if(!connectionOk) break; // no point of trying to re-send
-
-            Log.d("MainFragment", "re-sending previously failed request: "+request.getStatement());
-
-            if(request.getScope() instanceof StatementScope.LiveHandoverScope){
-                onChatHandoverInput(request);
-
-            } else {
-                //!! a MUST, otherwise requests will be sent with previous or 0 id and will fail
-                request.conversationId(conversationId);
-
-                nanoAccess.postStatement(request, onStatementResponse);
-            }
-
-            failedStatements.remove(request);
-        }
-    }
-
-//////////////////////////////////////////
+//<editor-fold desc=">>>>>>>>>  Carousel overriding  <<<<<<<<<">
 
     class MyCarouselUiProvider extends CarouselViewsProvider {
         @Nullable
