@@ -14,7 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
     public static final int HistoryPageSize = 8;
     public static final String END_HANDOVER_SESSION = "bye bye handover";
 
-    private Button startButton;
+    private ImageButton startButton;
     private ProgressBar progressBar;
     private TextView historySizeTextView;
 
@@ -250,7 +250,7 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
         ConversationSettings settings = new ConversationSettings().disableFeedback()
                 .speechEnable(true).enableMultiRequestsOnLiveAgent(true)
                 .enableOfflineMultiRequests(true)
-                .timestampConfig(true, new TimestampStyle("EEE, HH:mm",
+                .timestampConfig(true, new TimestampStyle("hh:mm a",
                         getPx(10), Color.parseColor("#a8a8a8"), null) ).
                         datestamp(true, new FriendlyDatestampFormatFactory(this));
 
@@ -300,9 +300,7 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
 
             @Override
             public HistoryHandler getHistoryHandler() {
-                historyHandler = new HistoryHandler(MainActivity.this, true);
-                return historyHandler;
-                // return new ConversationInjector.DefaultsInjector().getHistoryHandler() - if history is not needed
+                return new ConversationInjector.DefaultsInjector().getHistoryHandler() ;
             }
         }));
 
@@ -604,7 +602,7 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
         // now the chat is ready to receive requests injection
         if(getHistorySize() <= 1) { // the welcome message was already inserted to the history
             // example: injecting a request on each return to the conversation.
-            conversationFragment.get().injectResponse("Hello, this is a sample text injection after load", StatementScope.SystemScope());
+//            conversationFragment.get().injectResponse("Hello, this is a sample text injection after load", StatementScope.SystemScope());
         }
     }
 
@@ -828,16 +826,21 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
             String resourceName = null;
             switch (optionChannelType) {
                 case PhoneNumber:
-                    resourceName = "R.drawable.call_channel";
+                    resourceName = "R.drawable.call";
                     break;
                 case Chat:
-                    resourceName = "R.drawable.chat_channel";
+                    resourceName = "R.drawable.chat";
                     break;
                 case Ticket:
-                    resourceName = "R.drawable.mail_channel";
+                    resourceName = "R.drawable.email";
                     break;
             }
             return resourceName;
+        }
+
+        @Override
+        public int getQuickOptionsLayout() {
+            return R.layout.quick_option_layout_custom;
         }
 
         @Override
@@ -858,6 +861,16 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
         @Override
         public ChatElementViewHolder getLocalBubbleViewHolder(View view, ChatElementController controller) {
             return new DemoLocalViewHolder(view, controller);
+        }
+
+        @Override
+        public int getFragmentBackground() {
+            return R.drawable.bold_form_bg;
+        }
+
+        @Override
+        public int getUserInputLayout() {
+            return R.layout.user_input_view_holder_custom;
         }
     }
 

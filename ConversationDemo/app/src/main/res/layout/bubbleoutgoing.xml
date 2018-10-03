@@ -1,25 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_marginLeft="40dp"
+    android:layout_marginStart="40dp"
+    android:layout_marginRight="4dp"
+    android:layout_marginEnd="4dp"
+    android:layout_gravity="end"
+    android:gravity="end|center_vertical"
+    android:layout_marginTop="12dp">
 
     <com.nanorep.convesationui.views.ChatTextView
         android:id="@+id/demo_local_bubble_message_textview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="right"
-        android:layout_marginLeft="40dp"
-        android:layout_marginRight="4dp"
-        android:layout_marginTop="12dp"
-        android:background="@drawable/bg_outbox_normal"
+        android:layout_gravity="end"
+        android:background="@drawable/bubble_outgoing_drw"
+        android:textColor="@color/white"
+        android:textSize="16sp"
+        android:padding="12dp"
         app:chat_status_icon_style="@style/demo_chat_status_icon_style"
         app:enable_timestamp="true"
+        app:timestamp_textColor="#949494"
+        app:timestamp_textSize="12sp"
         app:timestamp_margin_top="2dp" />
-    <!-- if configured, will override settings
-        app:timestamp_textSize="23sp"
-        app:timestamp_textColor="#dd00aa"
-        android:textColor="#aa00dd"-->
 
-</LinearLayout>
+</FrameLayout>

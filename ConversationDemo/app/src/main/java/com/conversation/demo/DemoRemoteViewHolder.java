@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.nanorep.convesationui.viewholder.BubbleRemoteViewHolder;
+import com.nanorep.convesationui.viewholder.RemoteResourcesProvider;
 import com.nanorep.convesationui.viewholder.controllers.ChatElementController;
 import com.nanorep.nanoengine.chatelement.ChatElement;
 import com.nanorep.nanoengine.chatelement.RemoteOptionsChatElement;
@@ -18,7 +19,8 @@ public class DemoRemoteViewHolder extends BubbleRemoteViewHolder {
     private final ImageView avatarImageView;
 
     public DemoRemoteViewHolder(View view, ChatElementController controller) {
-        super(view, controller);
+        super(view, new RemoteResources(), controller);
+
         this.avatarImageView = itemView.findViewById(R.id.demo_agent_avatar);
     }
 
@@ -33,7 +35,19 @@ public class DemoRemoteViewHolder extends BubbleRemoteViewHolder {
 
         RemoteOptionsChatElement remoteChatElement = (RemoteOptionsChatElement) element;
         avatarImageView.setImageResource(remoteChatElement.getAgentType().equals(AgentType.Live) ?
-                R.drawable.mr_livechat :
-                R.drawable.mr_chatbot);
+                R.drawable.mr_chatbot :
+                R.drawable.bold_360);
+    }
+
+    static class RemoteResources extends RemoteResourcesProvider {
+        @Override
+        public int getPersistentOptionTextViewId() {
+            return R.id.my_persistent_text;
+        }
+
+        @Override
+        public int getPersistentOptionLayout() {
+            return R.layout.persistent_option;
+        }
     }
 }

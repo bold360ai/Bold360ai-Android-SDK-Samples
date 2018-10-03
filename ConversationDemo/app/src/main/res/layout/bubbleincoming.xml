@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -9,18 +10,22 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
         android:layout_marginLeft="4dp"
-        android:layout_marginTop="12dp"
-        android:src="@drawable/mr_chatbot"
+        android:paddingEnd="10dp"
+        android:src="@drawable/bold_360"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toLeftOf="@+id/viewholder_bubble_container"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintBottom_toBottomOf="@id/viewholder_bubble_container"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="4dp"
+        android:paddingRight="10dp"
+        tools:ignore="RtlSymmetry" />
 
     <!-- the wrapping FrameLayout is needed to define the limits within the bubble can "grow" -->
     <FrameLayout
         android:id="@+id/viewholder_bubble_container"
         android:layout_width="0dp"
+        android:layout_alignParentTop="true"
         android:layout_height="wrap_content"
         android:layout_marginEnd="30dp"
         android:layout_marginRight="30dp"
@@ -29,14 +34,15 @@
         app:layout_constraintLeft_toRightOf="@id/demo_agent_avatar"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintStart_toEndOf="@id/demo_agent_avatar"
-        app:layout_constraintTop_toTopOf="@id/demo_agent_avatar"
         app:layout_constraintWidth_default="wrap">
 
         <LinearLayout
             android:id="@+id/viewholder_bubble_container2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_inbox_normal"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bubble_incoming_drw"
+            android:padding="12dp"
             android:gravity="left|center_vertical"
             android:orientation="vertical"
             android:paddingTop="8dp">
@@ -46,7 +52,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="left"
-                app:enable_timestamp="true" />
+                app:chat_status_icon_style="@style/demo_chat_status_icon_style"
+                app:enable_timestamp="true"
+                android:textSize="16sp"
+                app:timestamp_textColor="#aeaeae"
+                app:timestamp_textSize="12sp" />
             <!-- if configured, will override settings
                 app:timestamp_textSize="10sp"
                 app:timestamp_textColor="#a8a8a8"-->
@@ -60,7 +70,9 @@
                 android:foreground="?selectableItemBackground"
                 android:gravity="right"
                 android:textColor="#007bff"
-                android:visibility="gone" />
+                android:visibility="gone"
+                android:textSize="14sp"
+                android:paddingTop="4dp"/>
 
             <LinearLayout
                 android:id="@+id/vh_remote_inner_options"
@@ -82,7 +94,7 @@
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/viewholder_remote_bubble_outbubble_options_recycler"
-        android:layout_width="wrap_content"
+        android:layout_width= "wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_below="@id/viewholder_bubble_container"

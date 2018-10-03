@@ -1,38 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <LinearLayout
+    <FrameLayout
         android:gravity="center"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
         android:orientation="vertical">
 
-        <Button
-            android:id="@+id/startButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Start conversation" />
-
         <TextView
-            android:textAppearance="?android:textAppearanceMedium"
-            android:id="@+id/historySizeTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+        android:textAppearance="?android:textAppearanceMedium"
+        android:id="@+id/historySizeTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+            android:visibility="gone"/>
+
+        <ImageButton
+            android:id="@+id/startButton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Start Bold 360 AI"
+            android:src="@drawable/bold_360"
+            android:background="@android:color/transparent"
+            android:scaleX="4"
+            android:scaleY="4"/>
 
         <ProgressBar
             android:visibility="invisible"
             android:id="@+id/progressBar"
             style="?android:attr/progressBarStyle"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:scaleY="4"
+            android:scaleX="4" />
 
 
-
-
-    </LinearLayout>
+    </FrameLayout>
 
 
 

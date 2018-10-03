@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
+    android:id="@+id/user_input_container2"
+    android:background="@drawable/user_input_background"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:minHeight="45dp"
+    android:layout_marginEnd="5dp"
+    android:layout_marginStart="5dp"
+    android:elevation="2dp"
+    android:layout_marginBottom="10dp">
+
+    <EditText
+        android:id="@+id/fragment_conversation_input_view"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        android:paddingLeft="14dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="4dp"
+        android:paddingRight="4dp"
+
+        android:hint="@string/type_message_here"
+        android:background="@null"
+
+        android:layout_marginRight="8dp"
+        android:layout_marginEnd="8dp"
+
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+
+        android:imeOptions="actionSend|flagNoEnterAction"
+        android:imeActionLabel="@string/send"
+        android:maxLines="6"
+        android:inputType="textCapSentences|textMultiLine"
+
+        android:gravity="start|center_vertical"
+        android:layout_gravity="start|center_vertical"
+
+        android:textSize="16sp"
+
+        />
+
+    <com.nanorep.convesationui.views.SendView
+        android:textColor="@color/send_text_color"
+        android:id="@+id/user_input_send_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        android:layout_gravity="center_vertical"
+        android:hint="@string/send"
+        android:text="@string/send"
+        app:sendDrawable="@drawable/send_selector"
+        app:enableSpeech="true"
+        app:speechDrawable="@drawable/speech_mic_selector"
+        android:layout_marginEnd="10dp"
+        android:layout_marginRight="10dp"
+        />
+
+</LinearLayout>
