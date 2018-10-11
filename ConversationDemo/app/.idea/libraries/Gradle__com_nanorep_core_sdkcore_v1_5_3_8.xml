@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.nanorep.core:sdkcore-v1.5.3.8">
+    <CLASSES>
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/sdkcore-v1.5.3.8.aar/ca132eb947fbf43dbca3e41c643f426d/res" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/sdkcore-v1.5.3.8.aar/ca132eb947fbf43dbca3e41c643f426d/jars/classes.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.nanorep.core/sdkcore/v1.5.3.8/1f076e49b0f4ddc211598cb34e090be5b1ffe5e5/sdkcore-v1.5.3.8-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

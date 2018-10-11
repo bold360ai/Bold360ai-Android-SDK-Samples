@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.nanorep.conversation:ui-v1.5.3.8">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/ui-v1.5.3.8.aar/831bb235098c5f30fa2a17bee6903675/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/ui-v1.5.3.8.aar/831bb235098c5f30fa2a17bee6903675/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.nanorep.conversation/ui/v1.5.3.8/26cce18768816477cb36521743d858691f9e3869/ui-v1.5.3.8-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

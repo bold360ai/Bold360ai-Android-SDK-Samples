@@ -300,9 +300,9 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
 
             @Override
             public HistoryHandler getHistoryHandler() {
-                historyHandler = new HistoryHandler(MainActivity.this, true);
-                return historyHandler;
-                // return new ConversationInjector.DefaultsInjector().getHistoryHandler() - if history is not needed
+//                historyHandler = new HistoryHandler(MainActivity.this, true);
+//                return historyHandler;
+                 return new ConversationInjector.DefaultsInjector().getHistoryHandler();// - if history is not needed
             }
         }));
 

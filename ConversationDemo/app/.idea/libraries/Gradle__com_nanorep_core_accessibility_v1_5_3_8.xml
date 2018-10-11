@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="Gradle: com.nanorep.core:accessibility-v1.5.3.8">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/accessibility-v1.5.3.8.aar/40759d4fff5f23c24419c49e4ad049ac/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-1/files-1.1/accessibility-v1.5.3.8.aar/40759d4fff5f23c24419c49e4ad049ac/res" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.nanorep.core/accessibility/v1.5.3.8/3840a370559891de03e41c4b93c095d92c02450d/accessibility-v1.5.3.8-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
