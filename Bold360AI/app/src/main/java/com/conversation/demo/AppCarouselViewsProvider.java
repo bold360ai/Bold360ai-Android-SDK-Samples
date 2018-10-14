@@ -8,6 +8,7 @@ import android.view.Gravity;
 
 import com.conversation.demo.viewholder.DemoCarouselInfoViewHolder;
 import com.nanorep.convesationui.structure.UiConfigurations;
+import com.nanorep.convesationui.structure.providers.CarouselElementUIProvider;
 import com.nanorep.convesationui.structure.providers.CarouselViewsProvider;
 import com.nanorep.convesationui.views.OptionActionListener;
 import com.nanorep.convesationui.views.carousel.CarouselInfoContainer;
@@ -22,7 +23,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static com.nanorep.sdkcore.utils.UtilityMethodsKt.getPx;
 
-class AppCarouselViewsProvider extends CarouselViewsProvider {
+class AppCarouselViewsProvider extends CarouselElementUIProvider.Defaults {
 
     @Nullable
     @Override
