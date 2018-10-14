@@ -1,9 +1,0 @@
-<component name="libraryTable">
-  <library name="Gradle: __local_aars__:/Users/obenoved/Documents/repository/Bold360ai-Android-SDK-Samples/ConversationDemoV2/chatintegration/libs/java_websocket.jar:unspecified@jar">
-    <CLASSES>
-      <root url="jar://$PROJECT_DIR$/../chatintegration/libs/java_websocket.jar!/" />
-    </CLASSES>
-    <JAVADOC />
-    <SOURCES />
-  </library>
-</component>
