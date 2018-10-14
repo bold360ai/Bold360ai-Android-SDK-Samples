@@ -77,8 +77,8 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Use the default demo account"
-                android:onClick="onDemoAccountClicked"
+                android:text="@string/use_the_default_demo_account"
+                android:onClick="onDemoAccountDetailsClicked"
                 android:textSize="16sp"
                 style="@style/DemoSubmitButton"
                 android:padding="15dp"

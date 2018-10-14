@@ -39,10 +39,8 @@ import com.nanorep.nanoengine.PersonalInfoRequest;
 import com.nanorep.nanoengine.Property;
 import com.nanorep.nanoengine.chatelement.ChatElement;
 import com.nanorep.nanoengine.chatelement.StorableChatElement;
-import com.nanorep.nanoengine.model.AgentType;
 import com.nanorep.nanoengine.model.configuration.ConversationSettings;
 import com.nanorep.nanoengine.model.configuration.TimestampStyle;
-import com.nanorep.nanoengine.model.conversation.statement.IncomingStatement;
 import com.nanorep.nanoengine.model.conversation.statement.OnStatementResponse;
 import com.nanorep.nanoengine.model.conversation.statement.StatementRequest;
 import com.nanorep.nanoengine.model.conversation.statement.StatementResponse;
@@ -83,37 +81,49 @@ public class MainActivity extends AppCompatActivity implements
         AccountsListAdapter.AccountsListListener,
         ConnectivityReceiver.ConnectivityListener, ChatEventListener {
 
+    /* --- Please fill with valid account values --- */
+    private final String ACCOUNT_NAME = "Jio";
+    private final String KNOWLEDGE_BASE = "Staging";
+    private final String API_KEY = "8bad6dea-8da4-4679-a23f-b10e62c84de8";
+    /*///////////////////////////////////////////////*/
+
     public static final String CONVERSATION_FRAGMENT_TAG = "conversation_fragment";
-    public static final int HistoryPageSize = 8;
     public static final String END_HANDOVER_SESSION = "bye bye handover";
 
-    private final String DEMO_ACCOUNT_NAME = "Jio";
-    private final String DEMO_KB = "Staging";
-    private final String DEMO_API_KEY = "8bad6dea-8da4-4679-a23f-b10e62c84de8";
+    public static final int HistoryPageSize = 8;
+    private int handoverReplyCount = 0;
 
     private ProgressBar progressBar;
     private EditText accountNameEditText;
     private EditText knowledgeBaseEditText;
     private EditText apiKetEditText;
 
-    private int handoverReplyCount = 0;
     private ConcurrentLinkedQueue<StatementRequest> failedStatements = new ConcurrentLinkedQueue<>();
-
-    private Map<String, OpenConversation> openConversations = new HashMap<>();
 
     private Map<String, AccountInfo> accounts = new HashMap<>();
 
     private ConnectivityReceiver connectivityReceiver = new ConnectivityReceiver();
 
+    /**
+     * in use when previously failed statements are posted to indicate if the connection is done again
+     * to stop the re-posting.
+     */
     private boolean connectionOk = true;
+
+    /**
+     * indicates if we wait for conversation creation.
+     * statements at this time are collected on the SDK, engine, side.
+     * once a connection established, the app should activate the
+     * createConversation API.
+     * while requests are posted if the engine indicates that the conversation is not available, it
+     * tries to create it. once creation succeeded the app will get a call to "onConversationIdUpdated"
+     * and this field will be cleared.
+     */
     private boolean pendingConversationCreation = false;
 
     private ChatController chatController;
     private MyHistoryProvider historyProvider;
     private AccountInfo lastSelectedAccount;
-    private MyAccountInfoProvider accountInfoProvider;
-    private AppChatUIProvider appChatUIProvider;
-    private MyEntitiesProvider entitiesProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,15 +144,6 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
-    private BotAccount getAccount() {
-        String accountName = accountNameEditText.getText().toString();
-        String kb = knowledgeBaseEditText.getText().toString();
-        String apiKey = apiKetEditText.getText().toString();
-
-        return new BotAccount(apiKey, accountName,
-                kb, "qa07", null);
-    }
-
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -155,6 +156,29 @@ public class MainActivity extends AppCompatActivity implements
         } catch (Exception NRInitilizationException) {
             Log.e(CONVERSATION_FRAGMENT_TAG, "NanoRep was not initialized");
         }
+    }
+
+    private BotAccount getAccount() {
+        String accountName = accountNameEditText.getText().toString();
+        String kb = knowledgeBaseEditText.getText().toString();
+        String apiKey = apiKetEditText.getText().toString();
+
+        return new BotAccount(apiKey, accountName,
+                kb, "qa07", null);
+    }
+
+
+
+    private void onAccountChanged() {
+        pendingConversationCreation = false;
+        ifNotNull(failedStatements, new Function0<Unit>() {
+            @Override
+            public Unit invoke() {
+                failedStatements.clear();
+                return null;
+            }
+        });
+        failedStatements.clear();
     }
 
     @Override
@@ -176,6 +200,12 @@ public class MainActivity extends AppCompatActivity implements
         this.chatController = createChat(account);
     }
 
+    public void onDemoAccountDetailsClicked(View view) {
+        accountNameEditText.setText(ACCOUNT_NAME);
+        knowledgeBaseEditText.setText(KNOWLEDGE_BASE);
+        apiKetEditText.setText(API_KEY);
+    }
+
     public void onStartClick(View view){
         View focused = getCurrentFocus();
         if (focused != null) {
@@ -193,8 +223,11 @@ public class MainActivity extends AppCompatActivity implements
 
     @NonNull
     private ChatController createChat(Account account) {
+
         ConversationSettings settings = new ConversationSettings().disableFeedback()
-                .speechEnable(true).enableMultiRequestsOnLiveAgent(true).setReadMoreThreshold(300)
+                .speechEnable(true)
+                .enableMultiRequestsOnLiveAgent(true)
+                .setReadMoreThreshold(300)
                 .timestampConfig(true, new TimestampStyle("dd.MM hh:mm:ss",
                         getPx(11), Color.parseColor("#33aa33"), null) )
                 .enableOfflineMultiRequests(true) // defaults to true
@@ -203,9 +236,10 @@ public class MainActivity extends AppCompatActivity implements
         //-> to configure the default text configuration to all bubbles text add something like the following:
         //settings.textStyleConfig(new StyleConfig(getPx(23), Color.BLUE, null));
 
-        accountInfoProvider = new MyAccountInfoProvider();
-        appChatUIProvider = new AppChatUIProvider();
-        entitiesProvider = new MyEntitiesProvider();
+        AccountInfoProvider accountInfoProvider = new MyAccountInfoProvider();
+        AppChatUIProvider appChatUIProvider = new AppChatUIProvider();
+        EntitiesProvider entitiesProvider = new MyEntitiesProvider();
+
         return new ChatController.Builder(this)
                 .conversationSettings(settings)
                 .entitiesProvider(entitiesProvider)
@@ -228,18 +262,6 @@ public class MainActivity extends AppCompatActivity implements
                 });
     }
 
-    private void onAccountChanged() {
-        pendingConversationCreation = false;
-        ifNotNull(failedStatements, new Function0<Unit>() {
-            @Override
-            public Unit invoke() {
-                failedStatements.clear();
-                return null;
-            }
-        });
-        failedStatements.clear();
-    }
-
     @Override
     public void onAccountUpdate(@NonNull AccountInfo accountInfo) {
         AccountInfo savedAccount = getAccountInfo(accountInfo.getApiKey());
@@ -250,8 +272,6 @@ public class MainActivity extends AppCompatActivity implements
                     "in accounts list\nadding account to saved accounts list");
             accounts.put(accountInfo.getApiKey(), accountInfo);
         }
-
-        String activeAccount = accountInfo.getApiKey();
     }
 
     private void openConversationFragment(Fragment fragment) {
@@ -271,20 +291,24 @@ public class MainActivity extends AppCompatActivity implements
 
         progressBar.setVisibility(View.GONE);
 
-        if(!historyProvider.hasHistory) {
-                // An example for request injection on conversation load:
-                // chatController.post(new SystemStatement("Hello, sample response injection on load"));
-        }
-    }
+        /*An example for request injection on conversation load:
+          chatController.post(new SystemStatement("Hello, sample response injection on load")); */
 
-    public void onDemoAccountClicked(View view) {
-        accountNameEditText.setText(DEMO_ACCOUNT_NAME);
-        knowledgeBaseEditText.setText(DEMO_KB);
-        apiKetEditText.setText(DEMO_API_KEY);
     }
-
 
     // *** Missing entities and personal info examples ***
+
+    // Example for Entity creation
+    private Entity createEntity(String entityName) {
+        Entity entity = new Entity(Entity.PERSISTENT, Entity.NUMBER, "3", entityName, "1");
+        for (int i = 0; i < 3; i++) {
+            Property property = new Property(Entity.NUMBER, String.valueOf(i) + "234", "SUBSCRIBER");
+            property.setName(property.getValue());
+            property.addProperty(new Property(Entity.NUMBER, String.valueOf(i) + "234", "ID"));
+            entity.addProperty(property);
+        }
+        return entity;
+    }
 
     class MyEntitiesProvider implements EntitiesProvider {
 
@@ -293,16 +317,10 @@ public class MainActivity extends AppCompatActivity implements
         public void provide(@NonNull ArrayList<String> entities, @NonNull Completion<ArrayList<Entity>> onReady) {
             NRConversationMissingEntities missingEntities = new NRConversationMissingEntities();
             for (String missingEntity : entities) {
-                switch (missingEntity) {
-               /* case "Beneficiary":
+                if (missingEntity.equals("SUBSCRIBERS")) {
                     missingEntities.addEntity(createEntity(missingEntity));
                     break;
-                case "USER_BILLS":
-                    missingEntities.addEntity(createEntity2(missingEntity));
-                    break;
-                    case "SUBSCRIBERS":
-                        missingEntities.addEntity(createEntity(missingEntity));
-                        break;*/
+
                 }
             }
 
@@ -313,18 +331,10 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         public void provide(@NotNull PersonalInfoRequest personalInfoRequest, @NotNull PersonalInfoRequest.Callback callback) {
             switch (personalInfoRequest.getId()) {
-                /*case "balance":
+                case "balance":
                     String balance = String.format("%10.2f$", Math.random() * 10000);
                     callback.onInfoReady(balance, null);
                     return;
-            case "POINTS":
-                privateInfo.getValueReady().onInfoReady("3,000", null);
-                return;
-            case "NewLoan":
-            case "LastTransactions":
-            case "NearestBranch":
-                privateInfo.getValueReady().onInfoReady(null, null);
-                return;*/
             }
 
             callback.onInfoReady("1,000$", null);
@@ -357,23 +367,12 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
-    // Example for Entity creation
-    private Entity createEntity(String entityName) {
-        Entity entity = new Entity(Entity.PERSISTENT, Entity.NUMBER, "3", entityName, "1");
-        for (int i = 0; i < 3; i++) {
-            Property property = new Property(Entity.NUMBER, String.valueOf(i) + "234", "SUBSCRIBER");
-            property.setName(property.getValue());
-            property.addProperty(new Property(Entity.NUMBER, String.valueOf(i) + "234", "ID"));
-            entity.addProperty(property);
-        }
-        return entity;
-    }
-
     @SuppressLint("ResourceType")
     @Override
     public void onError(@NonNull NRError error) {
         progressBar.setVisibility(View.INVISIBLE);
         String reason = error.getReason();
+
         switch (error.getErrorCode()){
 
             case NRError.ConversationCreationError:
@@ -382,9 +381,7 @@ public class MainActivity extends AppCompatActivity implements
 
                 pendingConversationCreation = true;
 
-
                 if(reason!=null && reason.equals(NRError.ConnectionException)) {
-
                     notifyConnectionError();
                 }
 
@@ -399,6 +396,7 @@ public class MainActivity extends AppCompatActivity implements
                 } else {
                     notifyStatementError(error);
                 }
+
                 StatementRequest statementRequest = (StatementRequest) error.getData();
                 if(isPendableError(error) && statementRequest != null) {
 
@@ -465,26 +463,10 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    //@Override
-    public void onInitializeChatHandover() {
-        handoverReplyCount = 0;
-        if(!connectionOk){
-            chatController.endHandover();
-            // response scope should be provided indicate the chat agent status while statement were injected.
-            // (see StatementScope for available scopes)
-            chatController.post(new SystemStatement("Failed to initiate live chat, please check your internet connection"));
-        } else {
-            chatController.post(new IncomingStatement("Hey, my name is Bob, how can I help?",
-                    StatementScope.HandoverScope()));
-        }
-    }
-
     private boolean isEndHandover(String inputText) {
         return inputText != null && inputText.equalsIgnoreCase(END_HANDOVER_SESSION);
     }
 
-
-    //@Override
     public void onChatHandoverInput(@NonNull StatementRequest statementRequest) {
         if(chatController == null) return;
 
@@ -500,7 +482,6 @@ public class MainActivity extends AppCompatActivity implements
             }
             failedStatements.add(statementRequest);
         } else {
-
             passHandoverResponse(statementRequest, endHandover);
         }
 
@@ -531,7 +512,6 @@ public class MainActivity extends AppCompatActivity implements
         if(statementRequest.getCallback() != null){
             statementRequest.getCallback().onResponse(new StatementResponse(responseText, statementRequest));
         }
-
     }
 
     @Override
@@ -594,8 +574,8 @@ public class MainActivity extends AppCompatActivity implements
                             @Override
                             public void run() {
                                 Log.d("History", "passing history list to listener, from = "+from + ", size = "+history.size());
-                                hasHistory = history.size()>0;
-                                listener.onReady(from, direction, getHistory(history, from));
+                                hasHistory = history.size() > 0;
+                                listener.onReady(from, direction, history);
                             }
                         });
                     }
@@ -689,10 +669,6 @@ public class MainActivity extends AppCompatActivity implements
             }
         }
 
-        private List<? extends StorableChatElement> getHistory(List<? extends StorableChatElement> history, int from) {
-            return history;
-        }
-
     }
 
 
@@ -739,23 +715,6 @@ public class MainActivity extends AppCompatActivity implements
             failedStatements.remove(request);
         }
     }
-
-////////////////////////////////////////////
-
-    static class OpenConversation{
-        String accountId;
-        String conversationId;
-        AgentType lastAgent;
-
-        OpenConversation(String accountId, String conversationId, AgentType lastAgent) {
-            this.accountId = accountId;
-            this.conversationId = conversationId;
-            this.lastAgent = lastAgent;
-        }
-    }
-
-
-/////////////////////////////////////
 
     /**
      * {@link StorableChatElement} implementing class
