@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements
         ConnectivityReceiver.ConnectivityListener, ChatEventListener {
 
     /* --- Please fill with valid account values --- */
+	//fixme: add string resources (or items in values) for the default values (instead of hard coded here and instead of gradle settings
     private final String ACCOUNT_NAME = "Jio";
     private final String KNOWLEDGE_BASE = "Staging";
     private final String API_KEY = "8bad6dea-8da4-4679-a23f-b10e62c84de8";
@@ -96,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements
     private ProgressBar progressBar;
     private EditText accountNameEditText;
     private EditText knowledgeBaseEditText;
-    private EditText apiKetEditText;
+    private EditText apiKetEditText; //fixme: change to apiKeyEditText
 
     private ConcurrentLinkedQueue<StatementRequest> failedStatements = new ConcurrentLinkedQueue<>();
 
@@ -125,14 +126,19 @@ public class MainActivity extends AppCompatActivity implements
     private MyHistoryProvider historyProvider;
     private AccountInfo lastSelectedAccount;
 
+    /*!! ChatController's providers kept as members to make sure their object will be kept alive
+       (chatController handles those listeners and providers as weak references, which means they
+       may be released otherwise) */
+    private MyAccountInfoProvider accountInfoProvider;
+    private AppChatUIProvider appChatUIProvider;
+    private MyEntitiesProvider entitiesProvider;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         historyProvider = new MyHistoryProvider();
-
-        connectivityReceiver.register(this, this);
 
         progressBar = findViewById(R.id.progressBar);
 
@@ -158,13 +164,19 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        connectivityReceiver.register(this, this);
+    }
+
     private BotAccount getAccount() {
         String accountName = accountNameEditText.getText().toString();
         String kb = knowledgeBaseEditText.getText().toString();
         String apiKey = apiKetEditText.getText().toString();
 
         return new BotAccount(apiKey, accountName,
-                kb, "qa07", null);
+                kb, "", null);
     }
 
 
@@ -200,6 +212,7 @@ public class MainActivity extends AppCompatActivity implements
         this.chatController = createChat(account);
     }
 
+//fixme: change button name to match functionality
     public void onDemoAccountDetailsClicked(View view) {
         accountNameEditText.setText(ACCOUNT_NAME);
         knowledgeBaseEditText.setText(KNOWLEDGE_BASE);
@@ -228,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements
                 .speechEnable(true)
                 .enableMultiRequestsOnLiveAgent(true)
                 .setReadMoreThreshold(300)
-                .timestampConfig(true, new TimestampStyle("dd.MM hh:mm:ss",
+                .timestampConfig(true, new TimestampStyle("hh:mm aa",
                         getPx(11), Color.parseColor("#33aa33"), null) )
                 .enableOfflineMultiRequests(true) // defaults to true
                 .datestamp(true, new FriendlyDatestampFormatFactory(this));
@@ -236,9 +249,9 @@ public class MainActivity extends AppCompatActivity implements
         //-> to configure the default text configuration to all bubbles text add something like the following:
         //settings.textStyleConfig(new StyleConfig(getPx(23), Color.BLUE, null));
 
-        AccountInfoProvider accountInfoProvider = new MyAccountInfoProvider();
-        AppChatUIProvider appChatUIProvider = new AppChatUIProvider();
-        EntitiesProvider entitiesProvider = new MyEntitiesProvider();
+        accountInfoProvider = new MyAccountInfoProvider();
+        appChatUIProvider = new AppChatUIProvider();
+        entitiesProvider = new MyEntitiesProvider();
 
         return new ChatController.Builder(this)
                 .conversationSettings(settings)
@@ -253,6 +266,7 @@ public class MainActivity extends AppCompatActivity implements
                     // TODO: !! should be activated on main thread by the calling component (chatController)
                     @Override
                     public void onComplete(ChatLoadResponse result) {
+						//fixme: check error type and decide if chat can be opened (not only on success)
                         if(result.getError() != null) {
                             onError(result.getError());
                         } else {
@@ -385,6 +399,11 @@ public class MainActivity extends AppCompatActivity implements
                     notifyConnectionError();
                 }
 
+                /* fixme: change the following lines to match the start button (add disable on click and enable as done here)
+				View accountBtn = getConversationStartBtn();
+                if(accountBtn!=null){
+                    accountBtn.setEnabled(true);
+                }*/
                 break;
 
             case NRError.StatementError:
@@ -463,6 +482,19 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    public void onInitializeChatHandover() {
+        handoverReplyCount = 0;
+        if(!connectionOk){
+            chatController.endHandover();
+            // response scope should be provided indicate the chat agent status while statement were injected.
+            // (see StatementScope for available scopes)
+            chatController.post(new SystemStatement("Failed to initiate live chat, please check your internet connection"));
+        } else {
+            chatController.post(new IncomingStatement("Hey, my name is Bob, how can I help?",
+                    StatementScope.HandoverScope()));
+        }
+    }
+
     private boolean isEndHandover(String inputText) {
         return inputText != null && inputText.equalsIgnoreCase(END_HANDOVER_SESSION);
     }
@@ -516,19 +548,19 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onUrlLinkSelected(String url) {
-        if(getApplicationContext() != null) {
+        //if(getApplicationContext() != null) {
             // sample code for handling given link
             try {
                 final Intent intent = new Intent(Intent.ACTION_VIEW).setData(Uri.parse(url));
-                getApplicationContext().startActivity(intent);
+                startActivity(intent);
             } catch (Exception e) {
                 Log.w(CONVERSATION_FRAGMENT_TAG, "failed to activate link on default app: "+e.getMessage());
-                Toast.makeText(getApplicationContext(), "activating: "+url, Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "activating: "+url, Toast.LENGTH_SHORT).show();
             }
         } else {
             Log.w(CONVERSATION_FRAGMENT_TAG, "got link activation while activity is no longer available.\n(" + url + ")");
         }
-    }
+    //}
 
     @Override
     public void onChatEnded() {
@@ -688,13 +720,14 @@ public class MainActivity extends AppCompatActivity implements
     public void connectionChanged(boolean isConnected) {
         this.connectionOk = isConnected;
         if(isConnected){
-            if(pendingConversationCreation){
+           /* not supported:
+		    if(pendingConversationCreation){
                 chatController.createConversation(getAccount());
 
             } else {
                 // post pending statements until disconnection
                 postFailedStatements();
-            }
+            }*/
         }
     }
 

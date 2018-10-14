@@ -6,5 +6,6 @@
     <string name="account_name">Account name</string>
     <string name="knowledgebase">Knowledge base</string>
     <string name="api_key">Api key</string>
+    <string name="use_the_default_demo_account">Use defaults</string>
 
 </resources>
