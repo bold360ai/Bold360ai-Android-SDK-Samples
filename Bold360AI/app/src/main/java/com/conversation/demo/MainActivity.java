@@ -17,6 +17,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
@@ -41,6 +42,7 @@ import com.nanorep.nanoengine.chatelement.ChatElement;
 import com.nanorep.nanoengine.chatelement.StorableChatElement;
 import com.nanorep.nanoengine.model.configuration.ConversationSettings;
 import com.nanorep.nanoengine.model.configuration.TimestampStyle;
+import com.nanorep.nanoengine.model.conversation.statement.IncomingStatement;
 import com.nanorep.nanoengine.model.conversation.statement.OnStatementResponse;
 import com.nanorep.nanoengine.model.conversation.statement.StatementRequest;
 import com.nanorep.nanoengine.model.conversation.statement.StatementResponse;
@@ -81,13 +83,6 @@ public class MainActivity extends AppCompatActivity implements
         AccountsListAdapter.AccountsListListener,
         ConnectivityReceiver.ConnectivityListener, ChatEventListener {
 
-    /* --- Please fill with valid account values --- */
-	//fixme: add string resources (or items in values) for the default values (instead of hard coded here and instead of gradle settings
-    private final String ACCOUNT_NAME = "Jio";
-    private final String KNOWLEDGE_BASE = "Staging";
-    private final String API_KEY = "8bad6dea-8da4-4679-a23f-b10e62c84de8";
-    /*///////////////////////////////////////////////*/
-
     public static final String CONVERSATION_FRAGMENT_TAG = "conversation_fragment";
     public static final String END_HANDOVER_SESSION = "bye bye handover";
 
@@ -95,10 +90,11 @@ public class MainActivity extends AppCompatActivity implements
     private int handoverReplyCount = 0;
 
     private ProgressBar progressBar;
+    private ImageButton startButton;
+
     private EditText accountNameEditText;
     private EditText knowledgeBaseEditText;
-    private EditText apiKetEditText; //fixme: change to apiKeyEditText
-
+    private EditText apiKeyEditText;
     private ConcurrentLinkedQueue<StatementRequest> failedStatements = new ConcurrentLinkedQueue<>();
 
     private Map<String, AccountInfo> accounts = new HashMap<>();
@@ -142,11 +138,13 @@ public class MainActivity extends AppCompatActivity implements
 
         progressBar = findViewById(R.id.progressBar);
 
+        startButton = findViewById(R.id.startButton);
+
         accountNameEditText = findViewById(R.id.account_name_edit_text);
 
         knowledgeBaseEditText = findViewById(R.id.knowledgebase_edit_text);
 
-        apiKetEditText = findViewById(R.id.api_key_edit_text);
+        apiKeyEditText = findViewById(R.id.api_key_edit_text);
 
     }
 
@@ -173,7 +171,7 @@ public class MainActivity extends AppCompatActivity implements
     private BotAccount getAccount() {
         String accountName = accountNameEditText.getText().toString();
         String kb = knowledgeBaseEditText.getText().toString();
-        String apiKey = apiKetEditText.getText().toString();
+        String apiKey = apiKeyEditText.getText().toString();
 
         return new BotAccount(apiKey, accountName,
                 kb, "", null);
@@ -212,19 +210,22 @@ public class MainActivity extends AppCompatActivity implements
         this.chatController = createChat(account);
     }
 
-//fixme: change button name to match functionality
-    public void onDemoAccountDetailsClicked(View view) {
-        accountNameEditText.setText(ACCOUNT_NAME);
-        knowledgeBaseEditText.setText(KNOWLEDGE_BASE);
-        apiKetEditText.setText(API_KEY);
+    public void onDefaultAccountDetails(View view) {
+        accountNameEditText.setText(getResources().getString(R.string.account_name));
+        knowledgeBaseEditText.setText(getResources().getString(R.string.knowledge_base));
+        apiKeyEditText.setText(getResources().getString(R.string.api_key));
     }
 
-    public void onStartClick(View view){
+    public void onStartClicked(View view){
         View focused = getCurrentFocus();
+
         if (focused != null) {
             focused.clearFocus();
         }
+
         progressBar.setVisibility(View.VISIBLE);
+        startButton.setEnabled(false);
+
         onUserAccountSelected(getAccount());
     }
 
@@ -266,12 +267,20 @@ public class MainActivity extends AppCompatActivity implements
                     // TODO: !! should be activated on main thread by the calling component (chatController)
                     @Override
                     public void onComplete(ChatLoadResponse result) {
+
 						//fixme: check error type and decide if chat can be opened (not only on success)
-                        if(result.getError() != null) {
-                            onError(result.getError());
+                        NRError error = result.getError();
+
+                        if(error != null) {
+                            onError(error);
+                            if (! (error.isConversationError() || error.isServerConnectionNotAvailable())) {
+                                openConversationFragment(result.getFragment());
+                            }
+
                         } else {
                             openConversationFragment(result.getFragment());
                         }
+                        progressBar.setVisibility(View.INVISIBLE);
                     }
                 });
     }
@@ -399,11 +408,11 @@ public class MainActivity extends AppCompatActivity implements
                     notifyConnectionError();
                 }
 
-                /* fixme: change the following lines to match the start button (add disable on click and enable as done here)
-				View accountBtn = getConversationStartBtn();
-                if(accountBtn!=null){
-                    accountBtn.setEnabled(true);
-                }*/
+                //fixme: change the following lines to match the start button (add disable on click and enable as done here)
+
+                if(startButton != null){
+                    startButton.setEnabled(true);
+                }
                 break;
 
             case NRError.StatementError:
@@ -557,7 +566,7 @@ public class MainActivity extends AppCompatActivity implements
                 Log.w(CONVERSATION_FRAGMENT_TAG, "failed to activate link on default app: "+e.getMessage());
                 Toast.makeText(this, "activating: "+url, Toast.LENGTH_SHORT).show();
             }
-        } else {
+//        } else {
             Log.w(CONVERSATION_FRAGMENT_TAG, "got link activation while activity is no longer available.\n(" + url + ")");
         }
     //}
@@ -859,6 +868,14 @@ public class MainActivity extends AppCompatActivity implements
         @Override
         public String provide(@NotNull String id, @NotNull String... formatArgs) {
             return id;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
+            startButton.setEnabled(true);
         }
     }
 }

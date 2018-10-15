@@ -25,7 +25,7 @@
                 android:id="@+id/account_name_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/account_name"
+                android:hint="Account Name"
                 android:gravity="center"
                 android:textSize="18sp"/>
 
@@ -43,7 +43,7 @@
                 android:id="@+id/knowledgebase_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/knowledgebase"
+                android:hint="Knowledge Base"
                 android:gravity="center"
                 android:textSize="18sp"/>
 
@@ -62,7 +62,7 @@
                 android:id="@+id/api_key_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/api_key"
+                android:hint="Api Key"
                 android:gravity="center"
                 android:textSize="18sp"/>
 
@@ -77,8 +77,8 @@
             <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/use_the_default_demo_account"
-                android:onClick="onDemoAccountDetailsClicked"
+                android:text="@string/use_the_default_demo_details"
+                android:onClick="onDefaultAccountDetails"
                 android:textSize="16sp"
                 style="@style/DemoSubmitButton"
                 android:padding="15dp"
@@ -108,7 +108,7 @@
                 android:text="Start Bold 360 AI"
                 android:src="@drawable/bold_360"
                 android:background="@android:color/transparent"
-                android:onClick="onStartClick"
+                android:onClick="onStartClicked"
                 android:layout_gravity="center"/>
 
             <ProgressBar
