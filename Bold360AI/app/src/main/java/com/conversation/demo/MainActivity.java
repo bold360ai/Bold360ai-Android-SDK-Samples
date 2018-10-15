@@ -198,14 +198,17 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         lastSelectedAccount = account;
-        if(!accounts.containsKey(account.apiKey())){
+        if (!accounts.containsKey(account.apiKey())) {
             accounts.put(account.apiKey(), account);
         }
         historyProvider.accountId = account.getApiKey();
 
-        if(account instanceof BotAccount){
+        if (account instanceof BotAccount) {
             setBotAccount((BotAccount) account);
         }
+
+        // !- account should already include the last conversation, there is no need to fetch it
+        //account.updateInfo(fetchAccountConversationData(account.getAccount()));
 
         this.chatController = createChat(account);
     }
