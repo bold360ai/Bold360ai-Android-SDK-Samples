@@ -15,7 +15,7 @@
         android:layout_height="match_parent"
         android:layout_marginBottom="12dp"
         android:minHeight="26dp"
-        android:src="@drawable/user_input_background" />
+        android:src="@drawable/user_input_background_custom" />
 
     <LinearLayout
         android:id="@+id/user_input_container2"
@@ -44,8 +44,6 @@
             android:paddingTop="12dp"
             android:paddingEnd="10dp"
             android:paddingBottom="24dp"
-
-            android:text="shit on your face"
 
             android:textSize="16sp"
             tools:ignore="RtlHardcoded" />

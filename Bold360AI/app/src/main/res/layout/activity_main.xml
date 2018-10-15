@@ -39,13 +39,13 @@
             app:hintTextAppearance="@style/CustomTextAppearance">
 
 
-        <EditText
-                android:id="@+id/knowledgebase_edit_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Knowledge Base"
-                android:gravity="center"
-                android:textSize="18sp"/>
+            <EditText
+                    android:id="@+id/knowledgebase_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Knowledge Base"
+                    android:gravity="center"
+                    android:textSize="18sp"/>
 
         </android.support.design.widget.TextInputLayout>
 
@@ -105,7 +105,7 @@
                 android:id="@+id/startButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Start Bold 360 AI"
+                android:text="@string/start_bold_360_ai"
                 android:src="@drawable/bold_360"
                 android:background="@android:color/transparent"
                 android:onClick="onStartClicked"
