@@ -95,6 +95,8 @@ public class MainActivity extends AppCompatActivity implements
     private EditText accountNameEditText;
     private EditText knowledgeBaseEditText;
     private EditText apiKeyEditText;
+    private EditText serverEditText;
+
     private ConcurrentLinkedQueue<StatementRequest> failedStatements = new ConcurrentLinkedQueue<>();
 
     private Map<String, AccountInfo> accounts = new HashMap<>();
@@ -146,6 +148,8 @@ public class MainActivity extends AppCompatActivity implements
 
         apiKeyEditText = findViewById(R.id.api_key_edit_text);
 
+        serverEditText = findViewById(R.id.server_edit_text);
+
     }
 
     @Override
@@ -172,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements
         String accountName = accountNameEditText.getText().toString();
         String kb = knowledgeBaseEditText.getText().toString();
         String apiKey = apiKeyEditText.getText().toString();
-        String server = getString(R.string.server);
+        String server = serverEditText.getText().toString();
 
         return new BotAccount(apiKey, accountName,
                 kb, server, null);
@@ -218,6 +222,7 @@ public class MainActivity extends AppCompatActivity implements
         accountNameEditText.setText(getResources().getString(R.string.account_name));
         knowledgeBaseEditText.setText(getResources().getString(R.string.knowledge_base));
         apiKeyEditText.setText(getResources().getString(R.string.api_key));
+        serverEditText.setText(getResources().getString(R.string.server));
     }
 
     public void onStartClicked(View view){

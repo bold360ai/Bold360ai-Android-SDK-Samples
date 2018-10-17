@@ -68,6 +68,24 @@
 
         </android.support.design.widget.TextInputLayout>
 
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/input_layout_server"
+            android:layout_marginTop="20dp"
+            app:hintTextAppearance="@style/CustomTextAppearance">
+
+
+            <EditText
+                android:id="@+id/server_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Server"
+                android:gravity="center"
+                android:textSize="18sp"/>
+
+        </android.support.design.widget.TextInputLayout>
+
 
         <FrameLayout
             android:layout_width="wrap_content"
