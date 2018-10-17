@@ -172,9 +172,10 @@ public class MainActivity extends AppCompatActivity implements
         String accountName = accountNameEditText.getText().toString();
         String kb = knowledgeBaseEditText.getText().toString();
         String apiKey = apiKeyEditText.getText().toString();
+        String server = getString(R.string.server);
 
         return new BotAccount(apiKey, accountName,
-                kb, "", null);
+                kb, server, null);
     }
 
 
