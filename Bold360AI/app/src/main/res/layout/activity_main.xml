@@ -19,7 +19,7 @@
             android:id="@+id/input_layout_account_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:hintTextAppearance="@style/custom_text_appearance">
+            app:hintTextAppearance="@style/CustomTextAppearance">
 
             <EditText
                 android:id="@+id/account_name_edit_text"
@@ -36,16 +36,16 @@
             android:layout_height="wrap_content"
             android:id="@+id/input_layout_knowledgebase"
             android:layout_marginTop="20dp"
-            app:hintTextAppearance="@style/custom_text_appearance">
+            app:hintTextAppearance="@style/CustomTextAppearance">
 
 
             <EditText
-                android:id="@+id/knowledgebase_edit_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Knowledge Base"
-                android:gravity="center"
-                android:textSize="18sp"/>
+                    android:id="@+id/knowledgebase_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Knowledge Base"
+                    android:gravity="center"
+                    android:textSize="18sp"/>
 
         </android.support.design.widget.TextInputLayout>
 
@@ -55,10 +55,10 @@
             android:layout_height="wrap_content"
             android:id="@+id/input_layout_api_key"
             android:layout_marginTop="20dp"
-            app:hintTextAppearance="@style/custom_text_appearance">
+            app:hintTextAppearance="@style/CustomTextAppearance">
 
 
-            <EditText
+        <EditText
                 android:id="@+id/api_key_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -73,7 +73,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/input_layout_server"
             android:layout_marginTop="20dp"
-            app:hintTextAppearance="@style/custom_text_appearance">
+            app:hintTextAppearance="@style/CustomTextAppearance">
 
 
             <EditText
@@ -87,7 +87,7 @@
         </android.support.design.widget.TextInputLayout>
 
 
-        <!--<FrameLayout
+        <FrameLayout
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="2">
@@ -103,7 +103,7 @@
                 android:layout_gravity="center"/>
 
         </FrameLayout>
--->
+
         <!--<TextView
             android:textAppearance="?android:textAppearanceMedium"
             android:id="@+id/historySizeTextView"
@@ -123,7 +123,7 @@
                 android:id="@+id/startButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/start_chat"
+                android:text="@string/start_bold_360_ai"
                 android:src="@drawable/bold_360"
                 android:background="@android:color/transparent"
                 android:onClick="onStartClicked"

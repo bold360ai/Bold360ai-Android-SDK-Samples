@@ -27,7 +27,25 @@
         <item name="android:visibility">gone</item>
     </style>
 
-    <style name="custom_text_appearance" parent="Base.TextAppearance.AppCompat.Large.Inverse">
+    <style name="demo_incoming_chat_status_icon_style">
+        <item name="chat_status_broken">@drawable/broken</item>
+        <item name="android:layout_marginLeft">2dp</item>
+        <item name="android:layout_marginBottom">2dp</item>
+        <item name="android:layout_height">8dp</item>
+        <item name="android:layout_width">16dp</item>
+        <item name="android:visibility">gone</item>
+    </style>
+
+    <style name="DemoSubmitButton" parent="Theme.AppCompat.Light">
+        <item name="android:background">@color/colorPrimary</item>
+        <item name="android:textColor">#fffefe</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:padding">10dp</item>
+        <item name="android:layout_marginRight">8dp</item>
+        <item name="android:layout_marginLeft">8dp</item>
+    </style>
+
+    <style name="CustomTextAppearance" parent="Base.TextAppearance.AppCompat.Large.Inverse">
         <item name="android:textSize">16sp</item>
         <item name="android:textColor">@color/colorPrimary</item>
     </style>
