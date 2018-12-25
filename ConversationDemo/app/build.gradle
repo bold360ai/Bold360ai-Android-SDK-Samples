@@ -23,8 +23,8 @@ android {
         buildTypes.each {
             it.buildConfigField "String", "ACCOUNT_NAME", "\"Jio\""
             it.buildConfigField "String", "API_KEY", "\"8bad6dea-8da4-4679-a23f-b10e62c84de8\""
-            it.buildConfigField "String", "KNOWLEDGE_BASE", "\"English\""
-            it.buildConfigField "String", "SERVER", "\"in1-1\""
+            it.buildConfigField "String", "KNOWLEDGE_BASE", "\"Staging\""
+            it.buildConfigField "String", "SERVER", "\"qa07\""
         }
     }
 }

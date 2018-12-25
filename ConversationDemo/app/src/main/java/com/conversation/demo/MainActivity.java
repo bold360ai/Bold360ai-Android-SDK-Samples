@@ -14,6 +14,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -175,7 +176,7 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
         setContentView(R.layout.activity_main);
 
         startButton = findViewById(R.id.startButton);
-        historySizeTextView = findViewById(R.id.historySizeTextView);
+        //historySizeTextView = findViewById(R.id.historySizeTextView);
         progressBar = findViewById(R.id.progressBar);
         updateHistorySizeIndication();
 
@@ -214,7 +215,7 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
     }
 
     private void updateHistorySizeIndication() {
-        historySizeTextView.setText(getString(R.string.history_size_format, getHistorySize()));
+        //historySizeTextView.setText(getString(R.string.history_size_format, getHistorySize()));
     }
 
     @Override
@@ -243,8 +244,8 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
         }
 
         Map<String, String> conversationContext = new HashMap<>();
-        account = new NRAccount(ACCOUNT_NAME, API_KEY,
-                KNOWLEDGE_BASE, SERVER, conversationContext);
+        account = getAccount();
+        account.setContext(conversationContext);
         account.setEntities(new String[]{"SUBSCRIBERS"});
 
         ConversationSettings settings = new ConversationSettings().disableFeedback()
@@ -259,6 +260,22 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
 
         this.nanoAccess = NanoRep.initializeConversation(account, this,
                 fetchAccountConversationData(account.getAccount()), settings);
+    }
+
+    @NonNull
+    private NRAccount getAccount() {
+        String accountName = "", apiKey = "", kb = "", server = "";
+        try {
+            accountName = ((EditText) findViewById(R.id.account_name_edit_text)).getText().toString();
+            apiKey = ((EditText) findViewById(R.id.api_key_edit_text)).getText().toString();
+            kb = ((EditText) findViewById(R.id.knowledgebase_edit_text)).getText().toString();
+            server = ((EditText) findViewById(R.id.server_edit_text)).getText().toString();
+        }catch (Exception ex){}
+
+        return new NRAccount(accountName.isEmpty() ? ACCOUNT_NAME : accountName,
+                apiKey.isEmpty() ? API_KEY : apiKey,
+                kb.isEmpty() ? KNOWLEDGE_BASE : kb,
+                server.isEmpty() ? SERVER : server, null);
     }
 
     private Conversation fetchAccountConversationData(String account) {
@@ -300,9 +317,9 @@ public class MainActivity extends AppCompatActivity implements ConversationListe
 
             @Override
             public HistoryHandler getHistoryHandler() {
-//                historyHandler = new HistoryHandler(MainActivity.this, true);
-//                return historyHandler;
-                 return new ConversationInjector.DefaultsInjector().getHistoryHandler();// - if history is not needed
+                historyHandler = new HistoryHandler(MainActivity.this, true);
+                return historyHandler;
+//                 return new ConversationInjector.DefaultsInjector().getHistoryHandler();// - if history is not needed
             }
         }));
 
