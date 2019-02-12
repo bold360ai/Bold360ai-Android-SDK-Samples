@@ -1,17 +1,25 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion '27.0.3'
+    compileSdkVersion 28
+    buildToolsVersion '28.0.3'
 
     defaultConfig {
         applicationId "app.com.nanoconversationdemo"
         minSdkVersion 16
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 1
-        versionName "1.0"
+        versionName "1.3.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-        multiDexEnabled true
+    }
+
+    lintOptions{
+        abortOnError false
+    }
+
+    compileOptions {
+        sourceCompatibility 1.8
+        targetCompatibility 1.8
     }
 
     buildTypes {
@@ -19,29 +27,21 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
-
-        buildTypes.each {
-            it.buildConfigField "String", "ACCOUNT_NAME", "\"Jio\""
-            it.buildConfigField "String", "API_KEY", "\"8bad6dea-8da4-4679-a23f-b10e62c84de8\""
-            it.buildConfigField "String", "KNOWLEDGE_BASE", "\"Staging\""
-            it.buildConfigField "String", "SERVER", "\"qa07\""
-        }
     }
 }
 
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
+
+    compile 'com.nanorep.conversation:ui:3.2.1'
+
+    compile "com.android.support:support-annotations:$androidSupportVer"
     compile "com.android.support:appcompat-v7:$androidSupportVer"
     compile "com.android.support:design:$androidSupportVer"
     compile "com.android.support:support-v4:$androidSupportVer"
-    compile "com.android.support:cardview-v7:$androidSupportVer"
-
-    compile 'com.nanorep.conversation:ui:v1.5.3.8'
-
-    compile 'com.android.support:multidex:1.0.3'
 
     testCompile 'junit:junit:4.12'
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
 }

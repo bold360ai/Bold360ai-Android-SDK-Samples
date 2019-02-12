@@ -8,20 +8,28 @@ import com.nanorep.convesationui.viewholder.BubbleRemoteViewHolder;
 import com.nanorep.convesationui.viewholder.RemoteResourcesProvider;
 import com.nanorep.convesationui.viewholder.controllers.ChatElementController;
 import com.nanorep.nanoengine.chatelement.ChatElement;
-import com.nanorep.nanoengine.chatelement.RemoteOptionsChatElement;
+import com.nanorep.nanoengine.chatelement.ContentChatElement;
+import com.nanorep.nanoengine.chatelement.OptionsChatElement;
 import com.nanorep.nanoengine.model.AgentType;
+import com.nanorep.nanoengine.model.configuration.StyleConfig;
 
-
-/**
- * Created by Aviran Abady on 8/25/17.
- */
 public class DemoRemoteViewHolder extends BubbleRemoteViewHolder {
-    private final ImageView avatarImageView;
 
-    public DemoRemoteViewHolder(View view, ChatElementController controller) {
+    private final ImageView avatarImageView;
+    private DynamicBubbleBind dynamicBubbleBind;
+
+    public DemoRemoteViewHolder(View view, ChatElementController controller, DynamicBubbleBind dynamicBubbleBind) {
         super(view, new RemoteResources(), controller);
 
+        // should configured the style to use for the bubbled text and the timestamp
+        // if font was configured on console for the remote text it will be overridden
+         /*Typeface fontface = getTypeface(view.getContext(), "great_vibes.otf");
+        setTextStyles(new StyleConfig(getPx(26), Color.GREEN, fontface),
+                new TimestampStyle("hh:mm:ss", getPx(24), Color.RED, fontface));*/
+
         this.avatarImageView = itemView.findViewById(R.id.demo_agent_avatar);
+
+        this.dynamicBubbleBind = dynamicBubbleBind;
     }
 
 
@@ -29,14 +37,27 @@ public class DemoRemoteViewHolder extends BubbleRemoteViewHolder {
     public void bind(@NonNull ChatElement element, int position, int totalCount) {
         super.bind(element, position, totalCount);
 
-        if (!(element instanceof RemoteOptionsChatElement) || avatarImageView == null) {
+        if (!(element instanceof OptionsChatElement) || avatarImageView == null) {
             return;
         }
 
-        RemoteOptionsChatElement remoteChatElement = (RemoteOptionsChatElement) element;
-        avatarImageView.setImageResource(remoteChatElement.getAgentType().equals(AgentType.Live) ?
+        ContentChatElement remoteChatElement = (ContentChatElement) element;
+
+        DynamicBubbleBind.BubbleData bubbleData = dynamicBubbleBind.onBind(remoteChatElement, position, totalCount);
+
+        if(bubbleData.displayAvatar()) {
+            avatarImageView.setImageResource(remoteChatElement.getAgentType().equals(AgentType.Live) ?
                 R.drawable.mr_chatbot :
                 R.drawable.bold_360);
+            avatarImageView.setVisibility(View.VISIBLE);
+        } else {
+            avatarImageView.setVisibility(View.INVISIBLE);
+        }
+
+        int color = bubbleData.getTextColor();
+        if(color != -1){
+            getBubbleText().setStyle(new StyleConfig(null, color, null), null);
+        }
     }
 
     static class RemoteResources extends RemoteResourcesProvider {
