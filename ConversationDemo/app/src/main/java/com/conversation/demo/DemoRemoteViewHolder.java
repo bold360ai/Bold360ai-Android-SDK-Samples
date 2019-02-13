@@ -10,7 +10,6 @@ import com.nanorep.convesationui.viewholder.controllers.ChatElementController;
 import com.nanorep.nanoengine.chatelement.ChatElement;
 import com.nanorep.nanoengine.chatelement.ContentChatElement;
 import com.nanorep.nanoengine.chatelement.OptionsChatElement;
-import com.nanorep.nanoengine.model.AgentType;
 import com.nanorep.nanoengine.model.configuration.StyleConfig;
 
 public class DemoRemoteViewHolder extends BubbleRemoteViewHolder {
@@ -46,7 +45,7 @@ public class DemoRemoteViewHolder extends BubbleRemoteViewHolder {
         DynamicBubbleBind.BubbleData bubbleData = dynamicBubbleBind.onBind(remoteChatElement, position, totalCount);
 
         if(bubbleData.displayAvatar()) {
-            avatarImageView.setImageResource(remoteChatElement.getAgentType().equals(AgentType.Live) ?
+            avatarImageView.setImageResource(remoteChatElement.getScope().isLive() ?
                 R.drawable.mr_chatbot :
                 R.drawable.bold_360);
             avatarImageView.setVisibility(View.VISIBLE);

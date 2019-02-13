@@ -98,14 +98,6 @@ public class MainActivity extends AppCompatActivity implements
 
     private static final String TAG = "MainActivity";
 
-    /* --- Please fill with valid account values --- */
-    private static final String ACCOUNT_NAME = "";
-    private static final String API_KEY = "";
-    private static final String KNOWLEDGE_BASE = "";
-    private static final String SERVER = "";
-    /*///////////////////////////////////////////////*/
-
-
     private static final String CONVERSATION_FRAGMENT_TAG = "conversation_fragment";
     public static final int HistoryPageSize = 8;
     public static final String END_HANDOVER_SESSION = "bye bye handover";
@@ -230,14 +222,16 @@ public class MainActivity extends AppCompatActivity implements
 
     public void initNanorep() {
 
-        if(ACCOUNT_NAME.isEmpty()){
+        Map<String, String> conversationContext = new HashMap<>();
+
+        account = getAccount();
+
+        if (account.getAccount().isEmpty() || account.getKnowledgeBase().isEmpty()) {
             setLoadingDisplay(false);
             Toast.makeText(this, "Please provide valid account values", Toast.LENGTH_LONG).show();
             return;
         }
 
-        Map<String, String> conversationContext = new HashMap<>();
-        account = getAccount();
         account.setContext(conversationContext);
         account.setEntities(new String[]{"SUBSCRIBER"});
 
@@ -266,10 +260,7 @@ public class MainActivity extends AppCompatActivity implements
             server = ((EditText) findViewById(R.id.server_edit_text)).getText().toString();
         }catch (Exception ignored){}
 
-        return new NRAccount(accountName.isEmpty() ? ACCOUNT_NAME : accountName,
-                apiKey.isEmpty() ? API_KEY : apiKey,
-                kb.isEmpty() ? KNOWLEDGE_BASE : kb,
-                server.isEmpty() ? SERVER : server, null);
+        return new NRAccount( accountName, apiKey, kb, server, null);
     }
 
     private Conversation fetchAccountConversationData(String account) {

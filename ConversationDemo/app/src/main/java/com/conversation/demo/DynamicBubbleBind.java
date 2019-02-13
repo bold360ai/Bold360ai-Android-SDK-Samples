@@ -25,7 +25,7 @@ class DynamicBubbleBind {
         lastType = element.getType();
         lastScope = element.getScope();
 
-        return new BubbleData().displayAvatar(displayAvatar).textColor(element.getScope().isLive()? Color.RED:-1);
+        return new BubbleData().displayAvatar(displayAvatar).textColor(element.getScope().isLive()? Color.BLUE:-1);
     }
 
 
