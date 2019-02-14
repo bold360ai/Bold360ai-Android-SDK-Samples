@@ -994,7 +994,7 @@ class MyCarouselViewsProvider extends CarouselViewsProvider {
         @Override
         public AgentTypingSettingsProvider getAgentTypingSettingsProvider() {
             AgentTypingSettingsProvider agentTypingSettingsProvider = new AgentTypingSettingsProvider();
-            agentTypingSettingsProvider.setMargins(0, 0, 0, 120);
+            agentTypingSettingsProvider.setMargins(0, 0, 0, 49);
             agentTypingSettingsProvider.setGravity(Gravity.BOTTOM);
             agentTypingSettingsProvider.setCompoundText("please wait");
             agentTypingSettingsProvider.setCompoundDrawable(R.drawable.ic_more_horiz_black_24dp);
