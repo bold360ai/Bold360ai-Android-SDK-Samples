@@ -112,7 +112,13 @@ class AccountForm : Fragment(), ContextAdapter {
             }
         }
 
-        contextHandler = ContextHandler(bot_context, contextAdapter)
+        contextHandler = ContextHandler(bot_context, contextAdapter).apply {
+            onDelete = { view ->
+                if(bot_context.childCount == 1){
+                    context_title.visibility = View.GONE
+                }
+            }
+        }
     }
 
     private fun prepareLiveChatForm() {
@@ -136,8 +142,10 @@ class AccountForm : Fragment(), ContextAdapter {
         return first.isBlank() || second.isBlank()
     }
 
-    override fun createView(botContext: Pair<String, String>?): View {
+    override fun createView(botContext: Pair<String, String>?,
+                            onDelete: ((ContextViewHolder) -> Unit)?): View {
         return ContextViewLinear(context!!).apply {
+            this.onDelete = onDelete
             botContext?.run {
                 this@apply.setBotContext(botContext)
             }
@@ -239,8 +247,20 @@ class AccountForm : Fragment(), ContextAdapter {
 
 class ContextHandler(var container: ContextContainer, val contextsAdapter: ContextAdapter) {
 
+    var onDelete: ((ContextViewHolder) -> Unit)? = {
+        container.removeContext(it)
+    }
+    set(value) {
+        field = {
+            container.removeContext(it)
+            value?.invoke(it)
+        }
+    }
+
+
+
     fun addContext(botContext: Pair<String, String>? = null) {
-        val view = contextsAdapter.createView(botContext)
+        val view = contextsAdapter.createView(botContext, onDelete)
         container.addContextView(view)
     }
 
@@ -266,12 +286,14 @@ interface ContextContainer {
     fun getContextList(): Map<String, String>?
 
     fun getLast(): Pair<String, String>?
+    fun removeContext(contextView: ContextViewHolder)
 }
 
 ///////////////////////////////////////////////////
 
 interface ContextAdapter {
-    fun createView(botContext: Pair<String, String>? = null): View
+    fun createView(botContext: Pair<String, String>? = null,
+                   onDelete: ((ContextViewHolder) -> Unit)? = null): View
 }
 
 ///////////////////////////////////////////////////
@@ -283,6 +305,8 @@ interface ContextViewHolder {
     fun getView(): View
 }
 
+
+
 ///////////////////////////////////////////////////
 
 class LinearContext @JvmOverloads constructor(
@@ -293,6 +317,10 @@ class LinearContext @JvmOverloads constructor(
 
     override fun addContextView(view: View) {
         addView(view, max(childCount - 1, 0))
+    }
+
+    override fun removeContext(contextView: ContextViewHolder) {
+        removeView(contextView.getView())
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
@@ -342,13 +370,16 @@ class ContextViewLinear @JvmOverloads constructor(
         orientation = LinearLayout.HORIZONTAL
         LayoutInflater.from(context).inflate(R.layout.bot_context_view, this, true)
 
-        delete_context.setOnClickListener {
-            (it.parent?.parent as? ViewGroup)?.let { root ->
+        delete_context.setOnClickListener {view ->
+            /*(it.parent?.parent as? ViewGroup)?.let { root ->
                 root.removeView(it.parent as View)
                 root.requestLayout()
-            }
+            }*/
+            onDelete?.invoke(this)
         }
     }
+
+    var onDelete: ((ContextViewHolder) -> Unit)? = null
 
     @Throws(AssertionError::class)
     override fun getBotContext(): Pair<String, String> {
