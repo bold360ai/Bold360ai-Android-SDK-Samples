@@ -22,15 +22,11 @@ const val DEMO_FORM_TAG = "demo_form_fragment";
 internal class MyHistoryProvider : HistoryProvider {
 
     internal var accountId: String? = null
-    val historySync = Any() // in use to block multi access to history from different actions.
-    private var handler: Handler? = null
+    private val historySync = Any() // in use to block multi access to history from different actions.
+    private var handler: Handler = Handler(Looper.getMainLooper())
 
     private val chatHistory = ConcurrentHashMap<String, List<HistoryElement>>()
     private var hasHistory = false
-
-    init {
-        handler = Handler(Looper.getMainLooper())
-    }
 
 
     override fun fetch(from: Int, @FetchDirection direction: Int, listener: HistoryListener?) {
@@ -42,7 +38,7 @@ internal class MyHistoryProvider : HistoryProvider {
                 history = Collections.unmodifiableList<HistoryElement>(getHistoryForAccount(accountId, from, direction))
             }
 
-            if (history.size > 0) {
+            if (history.isNotEmpty()) {
                 try {
                     Thread.sleep(800) // simulate async history fetching
                 } catch (e: InterruptedException) {
@@ -50,8 +46,8 @@ internal class MyHistoryProvider : HistoryProvider {
                 }
 
             }
-            if (handler!!.looper != null) {
-                handler!!.post {
+            if (handler.looper != null) {
+                handler.post {
                     Log.d("History", "passing history list to listener, from = " + from + ", size = " + history.size)
                     hasHistory = history.size > 0
                     listener!!.onReady(from, direction, history)
