@@ -49,7 +49,7 @@ internal class MyHistoryProvider : HistoryProvider {
             if (handler.looper != null) {
                 handler.post {
                     Log.d("History", "passing history list to listener, from = " + from + ", size = " + history.size)
-                    hasHistory = history.size > 0
+                    hasHistory = history.isNotEmpty()
                     listener!!.onReady(from, direction, history)
                 }
             }
@@ -132,13 +132,13 @@ internal class MyHistoryProvider : HistoryProvider {
         else
             Math.min(fromIdx + HistoryPageSize, historySize - 1)
 
-        try {
+        return try {
             Log.d("History", "fetching history items ($historySize) from $toIndex to $fromIdx")
 
-            return accountHistory.subList(toIndex, fromIdx)
+            accountHistory.subList(toIndex, fromIdx)
 
         } catch (ex: Exception) {
-            return ArrayList<HistoryElement>()
+            ArrayList<HistoryElement>()
         }
 
     }
@@ -161,8 +161,7 @@ internal class HistoryElement(var key:ByteArray = byteArrayOf()) : StorableChatE
     @StatementStatus
     private var status = StatusPending
 
-    override val isStorageReady: Boolean
-        get() = true
+    override val isStorageReady = true
 
     constructor(type: Int, timestamp: Long) : this() {
         this.type = type

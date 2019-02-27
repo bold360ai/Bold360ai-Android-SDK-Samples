@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.Button
 import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -23,6 +22,7 @@ import com.nanorep.nanoengine.model.configuration.StyleConfig
 import com.nanorep.sdkcore.utils.TextTagHandler
 import com.nanorep.sdkcore.utils.px
 import com.nanorep.sdkcore.utils.weakRef
+import kotlinx.android.synthetic.main.dummy_live_forms_layout.*
 import org.jetbrains.anko.childrenSequence
 import java.lang.ref.WeakReference
 
@@ -70,7 +70,7 @@ class DemoForm : Fragment() {
             data?.getIntroMessage()?.run { text = TextTagHandler.getSpannedHtml(this) }?: kotlin.run { visibility = View.GONE }
         })
 
-        view.findViewById<Button>(R.id.submitButton).setOnClickListener {
+        submitButton.setOnClickListener {
 
             fieldsContainer?.childrenSequence()?.forEach {
                 (it as? EditText)?.run {
