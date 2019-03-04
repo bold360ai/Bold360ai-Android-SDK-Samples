@@ -64,11 +64,8 @@ repositories {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    //implementation project(':ui')
-    implementation "com.nanorep.devconversation:ui:3.2.2.rc1"
-
-    // needed when compiling with ui import bintray version
-    implementation "com.nanorep.devconversation:chatintegration:3.2.2.rc1"
+    implementation "com.nanorep.devconversation:ui:3.2.2.rc2"
+    implementation "com.nanorep.devconversation:chatintegration:3.2.2.rc2"
     implementation "com.nanorep.devconversation:engine:3.2.2.rc1"
     implementation "com.nanorep.devcore:sdkcore:3.2.2.rc1"
     implementation "com.nanorep.devcore:accessibility:3.2.2.rc1"
