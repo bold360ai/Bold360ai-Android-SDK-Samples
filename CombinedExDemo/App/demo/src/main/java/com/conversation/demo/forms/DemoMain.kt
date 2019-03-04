@@ -101,11 +101,13 @@ class DemoMain : Fragment(), ChatEventListener, AccountListener {
 
         bold_chat.setOnClickListener { onChatClick(it) }
         bot_chat.setOnClickListener { onChatClick(it) }
+    }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
         accountInfoProvider = MyAccountInfoProvider()
         formProvider = MyFormProvider(this)
         historyProvider = MyHistoryProvider()
-
     }
 
     fun showWaiting(show: Boolean) {

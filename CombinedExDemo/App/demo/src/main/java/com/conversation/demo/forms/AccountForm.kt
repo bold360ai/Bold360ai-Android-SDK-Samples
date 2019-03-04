@@ -180,11 +180,11 @@ class AccountForm : Fragment(), ContextAdapter {
 
         val data = prevDataHandler.getFormData(context!!, chatType)
 
-        account_name_edit_text.setText(data[PrevDataHandler.Account_key] as String ?: "")
+        account_name_edit_text.setText(data[PrevDataHandler.Account_key] as? String ?: "")
 
-        knowledgebase_edit_text.setText(data[PrevDataHandler.Kb_key] as String ?: "")
+        knowledgebase_edit_text.setText(data[PrevDataHandler.Kb_key] as? String ?: "")
 
-        server_edit_text.setText(data[PrevDataHandler.Server_key] as String ?: "")
+        server_edit_text.setText(data[PrevDataHandler.Server_key] as? String ?: "")
 
         api_key_edit_text.setText(
             (data[PrevDataHandler.ApiKey_key] as? String) ?: (data[PrevDataHandler.Access_key] as? String) ?: ""
