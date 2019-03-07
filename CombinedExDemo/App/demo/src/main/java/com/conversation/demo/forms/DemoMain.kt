@@ -5,7 +5,6 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.Typeface
 import android.net.Uri
 import android.os.Bundle
 import android.support.v4.app.Fragment
@@ -27,21 +26,11 @@ import com.integration.core.StateEvent.Companion.Started
 import com.integration.core.StateEvent.Companion.Unavailable
 import com.nanorep.convesationui.bold.ui.FormListener
 import com.nanorep.convesationui.structure.FriendlyDatestampFormatFactory
-import com.nanorep.convesationui.structure.UiConfigurations
 import com.nanorep.convesationui.structure.controller.*
-import com.nanorep.convesationui.structure.feedback.FeedbackUIAdapter
-import com.nanorep.convesationui.structure.feedback.FeedbackViewDummy
 import com.nanorep.convesationui.structure.handlers.AccountInfoProvider
-import com.nanorep.convesationui.structure.providers.ChatUIProvider
-import com.nanorep.convesationui.structure.providers.FeedbackUIProvider
-import com.nanorep.convesationui.views.carousel.CarouselItemsUIAdapter
-import com.nanorep.convesationui.views.chatelement.BubbleContentUIAdapter
 import com.nanorep.nanoengine.Account
 import com.nanorep.nanoengine.AccountInfo
-import com.nanorep.nanoengine.chatelement.IncomingElementModel
-import com.nanorep.nanoengine.chatelement.OutgoingElementModel
 import com.nanorep.nanoengine.model.configuration.ConversationSettings
-import com.nanorep.nanoengine.model.configuration.StyleConfig
 import com.nanorep.nanoengine.model.configuration.TimestampStyle
 import com.nanorep.sdkcore.model.StatementScope
 import com.nanorep.sdkcore.model.isLive
@@ -108,6 +97,8 @@ class DemoMain : Fragment(), ChatEventListener, AccountListener {
         accountInfoProvider = MyAccountInfoProvider()
         formProvider = MyFormProvider(this)
         historyProvider = MyHistoryProvider()
+
+      //  setHasOptionsMenu(true)
     }
 
     fun showWaiting(show: Boolean) {
@@ -213,8 +204,6 @@ class DemoMain : Fragment(), ChatEventListener, AccountListener {
         return ChatController.Builder(context!!).apply {
             conversationSettings(settings)
             chatEventListener(this@DemoMain)
-            chatUIProvider(getCustomisedChatUI(context!!))
-
             historyProvider?.run { historyProvider(this) }
             accountInfoProvider?.run { accountProvider(this) }
             formProvider?.run { formProvider(this) }
@@ -401,97 +390,6 @@ class DemoMain : Fragment(), ChatEventListener, AccountListener {
 
         }
 
-    }
-
-    // How can we change default look of chat elements UI:
-    private fun getCustomisedChatUI(context: Context): ChatUIProvider {
-
-        val uiProvider = ChatUIProvider(context)
-
-        uiProvider.chatBackground = resources.getDrawable(R.drawable.bkg_bots)
-
-        val incomingUIProvider = uiProvider.chatElementsUIProvider.incomingUIProvider
-
-        incomingUIProvider
-            .configure = fun(adapter: BubbleContentUIAdapter): BubbleContentUIAdapter {
-            adapter.setBackground(resources.getDrawable(R.drawable.in_bubble))
-            adapter.setAvatar(resources.getDrawable(R.drawable.bot_avatar))
-
-            return adapter
-        }
-
-        incomingUIProvider
-            .customize = fun(adapter: BubbleContentUIAdapter, element: IncomingElementModel?): BubbleContentUIAdapter {
-            if (element != null) {
-                val scope = element.elemScope
-                if (scope.isLive()) {
-                    adapter.setAvatar(resources.getDrawable(R.drawable.agent))
-                    adapter.setTextStyle(StyleConfig(16, Color.DKGRAY))
-                    adapter.setBackground(resources.getDrawable(R.drawable.live_in_back))
-                }
-            }
-            return adapter
-        }
-
-        incomingUIProvider.carouselUIProvider.configure = fun(adapter: CarouselItemsUIAdapter): CarouselItemsUIAdapter {
-            adapter.setCardStyle(4f, 10f)
-            adapter.setOptionsTextStyle(StyleConfig(14, Color.parseColor("#4a4a4a")))
-            return adapter
-        }
-
-
-        /*incomingUIProvider.carouselUIProvider.customize =
-            fun(adapter: CarouselItemsUIAdapter, element: CarouselElementModel?): CarouselItemsUIAdapter {
-
-                val elemCarouselItems = element?.elemCarouselItems
-                val size = elemCarouselItems?.size ?: 0
-                if (size >= 3) {
-                    adapter.setOptionsTextStyle(StyleConfig(14, Color.RED, null))
-                }
-                return adapter
-            }*/
-
-        //incomingUIProvider.feedbackUIProvider.overrideFactory = MyFeedbackFactory()
-
-        val outgoingUIProvider = uiProvider.chatElementsUIProvider.outgoingUIProvider
-
-        outgoingUIProvider.configure = fun(adapter: BubbleContentUIAdapter): BubbleContentUIAdapter {
-            adapter.setTextStyle(StyleConfig(17, Color.WHITE, Typeface.SANS_SERIF))
-            adapter.setBackground(resources.getDrawable(R.drawable.out_bubble))
-            adapter.setTextAlignment(
-                UiConfigurations.Alignment.AlignEnd,
-                UiConfigurations.Alignment.AlignTop
-            )
-            return adapter
-        }
-
-        outgoingUIProvider.customize =
-            fun(adapter: BubbleContentUIAdapter, element: OutgoingElementModel?): BubbleContentUIAdapter {
-                /*if (element != null && element.elemContent.toLowerCase().contains("the")) {
-                    adapter.setTimestampStyle(TimestampStyle("E, HH:mm:ss", 11, Color.MAGENTA, null))
-                    adapter.setTextStyle(StyleConfig(null, Color.BLUE, Typeface.SERIF))
-                    adapter.setBackground(null)
-                }*/
-
-                if (element != null) {
-                    val scope = element.elemScope
-                    if (scope.isLive()) {
-                        //adapter.setAvatar(resources.getDrawable(R.drawable.bold_360))
-                        adapter.setTextStyle(StyleConfig(16, Color.RED))
-                        adapter.setBackground(resources.getDrawable(R.drawable.live_out_back))
-                    }
-                }
-                return adapter
-            }
-
-        return uiProvider
-    }
-
-    internal inner class MyFeedbackFactory : FeedbackUIProvider.FeedbackFactory {
-
-        override fun create(context: Context, feedbackDisplayType: Int): FeedbackUIAdapter {
-            return FeedbackViewDummy(context)
-        }
     }
 
     internal inner class MyAccountInfoProvider : AccountInfoProvider {

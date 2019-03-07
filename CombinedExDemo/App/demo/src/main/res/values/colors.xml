@@ -1,17 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#00567a</color>
-    <color name="colorPrimaryDark">#00567a</color>
-    <color name="colorAccent">#607d8b</color>
+    <!--<color name="colorPrimary">#0087ff</color>
+    <color name="colorPrimaryDark">#00567a</color>-->
+    <color name="colorAccent">#0087bb</color>
 
-    <color name="live_incoming_back">#ddcccc</color>
-    <color name="live_outgoing_back">#44A9FF</color>
+    <color name="live_incoming_back">#eeeaea</color>
+    <color name="live_outgoing_back">#4498ff</color>
 
-    <color name="chat_idle_blue">#0087FF</color>
-    <color name="chat_types_pressed">#ECECEC</color>
-
-    <color name="chat_form_field_hint">#9b9b9b</color>
-    <color name="chat_form_field_text">#4a4a4a</color>
-
-<color name="chat_form_submit_idle">#dcdcdc</color>
 </resources>
