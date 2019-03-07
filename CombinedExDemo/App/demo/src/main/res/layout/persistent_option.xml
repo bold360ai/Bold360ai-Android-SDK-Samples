@@ -1,23 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:gravity="center_vertical"
-    android:paddingTop="8dp"
-    android:paddingBottom="8dp">
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/mr_chatbot"
-        android:paddingRight="8dp"/>
-
-    <android.support.v7.widget.AppCompatTextView
+<android.support.v7.widget.AppCompatTextView
+        xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/my_persistent_text"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="16sp"/>
+        android:textSize="16sp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:paddingLeft="17dp"
+        android:paddingStart="17dp"
+        android:paddingRight="14dp"
+        android:paddingEnd="14dp"
+        style="@style/persistent_option"/>
 
-</LinearLayout>

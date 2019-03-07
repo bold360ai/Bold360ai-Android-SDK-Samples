@@ -95,7 +95,7 @@
                       android:layout_height="wrap_content"
                       android:text="@string/bot_context_list"
                       android:textSize="18sp"
-                      android:textColor="@color/chat_form_field_hint"
+                      android:textColor="@color/form_field_hint"
                       android:layout_marginTop="12dp"
                       android:layout_marginStart="8dp"
                       android:visibility="gone"/>
@@ -111,7 +111,8 @@
                         android:layout_gravity="start"
                         android:layout_marginTop="8dp"
                         android:layout_marginStart="6dp"
-                        android:text="@string/add_context"/>
+                        android:text="@string/add_context"
+                        style="@style/main_button"/>
             </com.conversation.demo.forms.LinearContext>
 
         </LinearLayout>
@@ -121,15 +122,12 @@
             android:id="@+id/start_chat"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
             android:layout_gravity="center_horizontal|bottom"
             android:layout_marginBottom="16dp"
             android:layout_marginTop="18dp"
             android:contentDescription="@string/start_chat"
-            android:scaleType="fitXY"
             android:text="@string/start_chat"
-            style="@style/ChatFormButtons"/>
+            style="@style/submit_button"/>
 
 </LinearLayout>
 

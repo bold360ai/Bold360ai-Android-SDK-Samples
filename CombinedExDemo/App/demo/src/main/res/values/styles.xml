@@ -1,10 +1,10 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorPrimaryDark">@color/colorPrimary</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
@@ -13,7 +13,9 @@
         <item name="windowNoTitle">true</item>
     </style>
 
-    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:colorPrimaryDark" tools:targetApi="lollipop">@color/colorPrimary</item>
+    </style>
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
@@ -36,24 +38,24 @@
         <item name="android:visibility">gone</item>
     </style>
 
-    <style name="DemoSubmitButton" parent="Theme.AppCompat.Light">
+<!--    <style name="DemoSubmitButton" parent="Theme.AppCompat.Light">
         <item name="android:background">@color/colorPrimary</item>
         <item name="android:textColor">#fffefe</item>
         <item name="android:textSize">16sp</item>
         <item name="android:padding">10dp</item>
         <item name="android:layout_marginRight">8dp</item>
         <item name="android:layout_marginLeft">8dp</item>
-    </style>
+    </style>-->
 
     <style name="CustomTextAppearance" parent="Base.TextAppearance.AppCompat.Large.Inverse">
         <item name="android:textSize">16sp</item>
-        <item name="android:textColor">@color/chat_form_field_hint</item>
+        <item name="android:textColor">@color/form_field_hint</item>
     </style>
 
     <style name="TextInputLayoutAppearance" parent="Widget.Design.TextInputLayout">
         <!-- reference our hint & error styles -->
         <item name="hintTextAppearance">@style/CustomTextAppearance</item>
-        <item name="android:textColor">@color/chat_form_field_text</item>
+        <item name="android:textColor">@color/form_field_text</item>
         <item name="colorControlNormal">#1e000000</item>
         <item name="colorControlActivated">#7e000000</item>
         <item name="android:paddingStart">4dp</item>
@@ -65,29 +67,6 @@
         <item name="android:gravity">start</item>
         <item name="android:textSize">18sp</item>
         <item name="android:textColorHint">@android:color/transparent</item>
-    </style>
-
-    <style name="ChatMainButtons">
-        <item name="android:background">@drawable/chat_main_button_selector</item>
-        <item name="android:textColor">@color/chat_main_color_selector</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:minHeight">40dp</item>
-        <item name="android:gravity">center</item>
-        <item name="android:textSize">16sp</item>
-    </style>
-
-    <style name="ChatFormButtons" parent="ChatMainButtons">
-        <item name="android:background">@drawable/chat_button_selector</item>
-        <item name="android:textColor">@color/white</item>
-        <item name="android:textAllCaps">true</item>
-        <item name="android:minHeight">40dp</item>
-        <item name="android:gravity">center</item>
-    </style>
-
-    <style name="ChatFormField">
-        <item name="android:textSize">16sp</item>
-        <item name="android:textColor">@color/chat_form_field_text</item>
-        <item name="android:textColorHint">@color/chat_form_field_hint</item>
     </style>
 
 </resources>

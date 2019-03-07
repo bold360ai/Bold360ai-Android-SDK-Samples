@@ -64,10 +64,10 @@ repositories {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    implementation "com.nanorep.devconversation:ui:3.2.2.rc2"
+    implementation "com.nanorep.devconversation:ui:3.2.2.rc3"
     implementation "com.nanorep.devconversation:chatintegration:3.2.2.rc2"
-    implementation "com.nanorep.devconversation:engine:3.2.2.rc1"
-    implementation "com.nanorep.devcore:sdkcore:3.2.2.rc1"
+    implementation "com.nanorep.devconversation:engine:3.2.2.rc2"
+    implementation "com.nanorep.devcore:sdkcore:3.2.2.rc2"
     implementation "com.nanorep.devcore:accessibility:3.2.2.rc1"
 
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.3.21"
