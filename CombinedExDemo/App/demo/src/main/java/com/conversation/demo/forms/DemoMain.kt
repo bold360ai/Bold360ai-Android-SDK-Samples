@@ -51,7 +51,7 @@ internal const val DemoMain_TAG = "DemoMain"
  * create an instance of this fragment.
  *
  */
-class DemoMain : Fragment(), ChatEventListener, AccountListener {
+class DemoMain : Fragment()/*, ChatEventListener, AccountListener*/ {
     val CONVERSATION_FRAGMENT_TAG = "conversation_fragment"
     val DEMO_FORM_TAG = "demo_form_fragment"
 
@@ -406,20 +406,7 @@ class DemoMain : Fragment(), ChatEventListener, AccountListener {
         }
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     *
-     *
-     * See the Android Training lesson [Communicating with Other Fragments]
-     * (http://developer.android.com/training/basics/fragments/communicating.html)
-     * for more information.
-     */
-    interface FragmentInteraction {
-        fun enableWaiting(enable: Boolean)
-    }
+
 
     companion object {
         /**

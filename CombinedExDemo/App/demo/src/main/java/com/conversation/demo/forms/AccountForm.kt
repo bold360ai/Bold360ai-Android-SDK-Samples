@@ -24,9 +24,9 @@ import kotlinx.android.synthetic.main.bot_context_view.view.*
 import kotlin.math.max
 
 
-interface AccountListener {
+/*interface AccountListener {
     fun onReady(account: Account)
-}
+}*/
 
 
 class AccountForm : Fragment(), ContextAdapter {
