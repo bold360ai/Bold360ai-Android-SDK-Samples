@@ -15,7 +15,6 @@ import android.view.Gravity
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
 import com.conversation.demo.forms.*
 import com.integration.bold.boldchat.core.FormData
 import com.integration.core.FormResults
@@ -248,7 +247,7 @@ class ChatActivity : AppCompatActivity(), ChatFlowHandler {
             }
 
             StateEvent.ChatWindowDetached -> {
-                supportFragmentManager?.popBackStack(
+                supportFragmentManager?.takeUnless { isFinishing }?.popBackStack(
                     CONVERSATION_FRAGMENT_TAG,
                     FragmentManager.POP_BACK_STACK_INCLUSIVE
                 )
@@ -350,11 +349,9 @@ class ChatActivity : AppCompatActivity(), ChatFlowHandler {
             val intent = Intent(Intent.ACTION_VIEW).setData(Uri.parse(url))
             startActivity(intent)
         } catch (e: Exception) {
-            Log.w(CONVERSATION_FRAGMENT_TAG, "failed to activate link on default app: " + e.message)
-            toast(this, "activating: $url", Toast.LENGTH_SHORT)
+            Log.w(CONVERSATION_FRAGMENT_TAG, ">> Failed to activate link on default app: " + e.message)
+           // toast(this, "activating: $url", Toast.LENGTH_SHORT)
         }
-
-        Log.w(CONVERSATION_FRAGMENT_TAG, "got link activation while activity is no longer available.\n($url)")
     }
 
     //-> previous listener method signature @Override onPhoneNumberNavigation(@NonNull String phoneNumber) {
@@ -364,9 +361,8 @@ class ChatActivity : AppCompatActivity(), ChatFlowHandler {
             intent.data = Uri.parse("tel:$phoneNumber")
             startActivity(intent)
         } catch (e: ActivityNotFoundException) {
-
+            Log.w(CONVERSATION_FRAGMENT_TAG, ">> Failed to activate phone dialer default app: " + e.message)
         }
-
     }
 
     companion object {

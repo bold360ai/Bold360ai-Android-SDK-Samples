@@ -137,7 +137,7 @@ class DemoForm : Fragment() {
 
     override fun onStop() {
 
-        if (!isSubmitted) {
+        if (isRemoving && !isSubmitted) {
             listener?.get()?.onCancel(data?.formType)
         }
 
