@@ -262,8 +262,6 @@ class ContextHandler(var container: ContextContainer, val contextsAdapter: Conte
         }
     }
 
-
-
     fun addContext(botContext: Pair<String, String>? = null) {
         val view = contextsAdapter.createView(botContext, onDelete)
         container.addContextView(view)
@@ -342,8 +340,8 @@ class LinearContext @JvmOverloads constructor(
     override fun getContextList(): Map<String, String>? {
         return (0 until childCount - 1).map { idx ->
             val entry = (getChildAt(idx) as? ContextViewHolder)?.getBotContext() ?: Pair("", "")
-            entry.first to entry.second
-        }.toMap()
+             entry.first to entry.second
+        }.filterNot { it.first.isBlank() }.toMap() // remove empty pairs
     }
 
     override fun getLast(): Pair<String, String>? {
@@ -386,7 +384,9 @@ class ContextViewLinear @JvmOverloads constructor(
     override fun getBotContext(): Pair<String, String> {
         val key = context_key.text.toString()
         val value = context_value.text.toString()
-        if (key.isBlank() || value.isBlank()) {
+        val blankKey = key.isBlank()
+        val blankValue = value.isBlank()
+        if (blankKey && !blankValue || blankValue && !blankKey) {
             throw AssertionError()
         }
         return key to value
@@ -423,7 +423,7 @@ class PrevDataHandler {
         const val Context_key = "contextKey"
     }
 
-    fun saveChatData(context: Context, data: Map<String, Any>, chatType: String) {
+    private fun saveChatData(context: Context, data: Map<String, Any>, chatType: String) {
         when (chatType) {
             ChatType.BotChat -> saveData(context, BotSharedName, data)
             ChatType.LiveChat -> saveData(context, BoldSharedName, data)
