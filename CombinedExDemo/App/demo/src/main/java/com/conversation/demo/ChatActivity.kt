@@ -247,7 +247,7 @@ class ChatActivity : AppCompatActivity(), ChatFlowHandler {
             }
 
             StateEvent.ChatWindowDetached -> {
-                supportFragmentManager?.popBackStack(
+                supportFragmentManager?.takeUnless { isFinishing }?.popBackStack(
                     CONVERSATION_FRAGMENT_TAG,
                     FragmentManager.POP_BACK_STACK_INCLUSIVE
                 )
