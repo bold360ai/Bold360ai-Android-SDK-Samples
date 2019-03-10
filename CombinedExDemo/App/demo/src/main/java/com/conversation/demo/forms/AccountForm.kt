@@ -13,6 +13,7 @@ import android.view.animation.AlphaAnimation
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import android.widget.ScrollView
+import com.conversation.demo.ChatFlowHandler
 import com.conversation.demo.ChatType
 import com.conversation.demo.R
 import com.nanorep.convesationui.bold.model.BoldAccount
@@ -24,26 +25,22 @@ import kotlinx.android.synthetic.main.bot_context_view.view.*
 import kotlin.math.max
 
 
-interface AccountListener {
-    fun onReady(account: Account)
-}
-
 
 class AccountForm : Fragment(), ContextAdapter {
 
     companion object {
         @JvmStatic
-        fun create(@ChatType chatType: String, listener: AccountListener? = null): AccountForm {
+        fun create(@ChatType chatType: String): AccountForm {
             return AccountForm().apply {
                 this.chatType = chatType
-                this.accountListener = listener
             }
         }
     }
 
     private lateinit var chatType: String
 
-    private var accountListener: AccountListener? = null
+    private var chatFlowHandler: ChatFlowHandler? = null
+
     private var account: Account? = null
     private val prevDataHandler = PrevDataHandler()
 
@@ -80,7 +77,7 @@ class AccountForm : Fragment(), ContextAdapter {
             account = createAccount()
             account?.run {
                 it.isEnabled = false
-                accountListener?.onReady(this)
+                chatFlowHandler?.onAccountReady(this)
             }
         }
 
@@ -89,6 +86,14 @@ class AccountForm : Fragment(), ContextAdapter {
         activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
     }
 
+    override fun onAttach(context: Context?) {
+        super.onAttach(context)
+
+        chatFlowHandler = (context as? ChatFlowHandler)?:kotlin.run {
+            Log.e(DemoMain.TAG, "$context must implement ChatFlowHandler")
+            null
+        }
+    }
 
     private fun prepareBotChatForm() {
         bot_fields.visibility = View.VISIBLE
@@ -257,8 +262,6 @@ class ContextHandler(var container: ContextContainer, val contextsAdapter: Conte
         }
     }
 
-
-
     fun addContext(botContext: Pair<String, String>? = null) {
         val view = contextsAdapter.createView(botContext, onDelete)
         container.addContextView(view)
@@ -337,8 +340,8 @@ class LinearContext @JvmOverloads constructor(
     override fun getContextList(): Map<String, String>? {
         return (0 until childCount - 1).map { idx ->
             val entry = (getChildAt(idx) as? ContextViewHolder)?.getBotContext() ?: Pair("", "")
-            entry.first to entry.second
-        }.toMap()
+             entry.first to entry.second
+        }.filterNot { it.first.isBlank() }.toMap() // remove empty pairs
     }
 
     override fun getLast(): Pair<String, String>? {
@@ -371,11 +374,7 @@ class ContextViewLinear @JvmOverloads constructor(
         LayoutInflater.from(context).inflate(R.layout.bot_context_view, this, true)
 
         delete_context.setOnClickListener {view ->
-            /*(it.parent?.parent as? ViewGroup)?.let { root ->
-                root.removeView(it.parent as View)
-                root.requestLayout()
-            }*/
-            onDelete?.invoke(this)
+             onDelete?.invoke(this)
         }
     }
 
@@ -385,7 +384,9 @@ class ContextViewLinear @JvmOverloads constructor(
     override fun getBotContext(): Pair<String, String> {
         val key = context_key.text.toString()
         val value = context_value.text.toString()
-        if (key.isBlank() || value.isBlank()) {
+        val blankKey = key.isBlank()
+        val blankValue = value.isBlank()
+        if (blankKey && !blankValue || blankValue && !blankKey) {
             throw AssertionError()
         }
         return key to value
@@ -422,7 +423,7 @@ class PrevDataHandler {
         const val Context_key = "contextKey"
     }
 
-    fun saveChatData(context: Context, data: Map<String, Any>, chatType: String) {
+    private fun saveChatData(context: Context, data: Map<String, Any>, chatType: String) {
         when (chatType) {
             ChatType.BotChat -> saveData(context, BotSharedName, data)
             ChatType.LiveChat -> saveData(context, BoldSharedName, data)
