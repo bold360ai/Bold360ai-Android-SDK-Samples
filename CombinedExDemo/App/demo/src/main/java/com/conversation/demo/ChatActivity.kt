@@ -174,6 +174,7 @@ class ChatActivity : AppCompatActivity(), ChatFlowHandler {
         if (isFinishing) return null
 
         val settings = ConversationSettings()
+            .disableFileUpload()
             .speechEnable(true)
             .enableMultiRequestsOnLiveAgent(true)
             .timestampConfig(
@@ -400,6 +401,11 @@ internal class ChatFormProvider(
 ) : FormProvider {
 
     override fun presentForm(formData: FormData, callback: FormListener) {
+        if(formData.formType == FormType.PreChatForm){
+            callback.onComplete(null)
+            return
+        }
+
         val fragmentManager = fragmentManager()
 
         fragmentManager?.run {
