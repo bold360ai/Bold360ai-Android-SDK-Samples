@@ -64,7 +64,7 @@ repositories {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    implementation "com.nanorep.devconversation:ui:3.2.2.rc4"
+    implementation "com.nanorep.devconversation:ui:3.2.2.rc5"
     implementation "com.nanorep.devconversation:chatintegration:3.2.2.rc2"
     implementation "com.nanorep.devconversation:engine:3.2.2.rc2"
     implementation "com.nanorep.devcore:sdkcore:3.2.2.rc2"
