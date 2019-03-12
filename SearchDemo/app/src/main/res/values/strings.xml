@@ -1,3 +1,12 @@
 <resources>
-    <string name="AppName">Search SDK Demo</string>
+    <string name="app_name">Nanorep</string>
+    <string name="helpful" translatable="false">Was this helpful?</string>
+    <string name="sorry" translatable="false">We’re sorry to hear that</string>
+    <string name="thanks" translatable="false">Thanks for your feedback</string>
+    <string name="send_issue" translatable="false">Please send us your issue by email</string>
+    <string name="account_form_name" translatable="false">Please fill in your account</string>
+    <string name="account_form_kb" translatable="false">Please fill in your kb</string>
+    <string name="null_file_path_error" translatable="false">fileUploadPaths is null</string>
+    <string name="dialer_error" translatable="false">Unable to start dialer</string>
+
 </resources>
