@@ -133,9 +133,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 AccountParams accountParams = new AccountParams(accountName, knowledgeBase);
-
-                accountParams.setHost("qa07");
-
+                
                 // Get the selected context:
                 // For example: Service: "MY-SEARCH-CONTEXT"
                 String nrContext = nrContextEditText.getText().toString();
