@@ -640,10 +640,13 @@ public class MainActivity extends AppCompatActivity implements
                 getWindow().getDecorView() : conversationFragment.get().getView();
 
         try {
-            snack(snackView,
-                    s + error.getReason(),
-                    1000, -1, Gravity.CENTER, new int[]{}, backgroundColor);
+            if(snackView != null) {
+                snack(snackView,
+                        s + error.getReason(),
+                        1000, -1, Gravity.CENTER, new int[]{}, backgroundColor);
+            }
         } catch (Exception ignored) {
+            Log.e(TAG, "Failed displaying snack message: "+error);
         }
     }
 
