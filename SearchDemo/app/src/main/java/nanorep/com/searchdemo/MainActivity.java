@@ -7,8 +7,8 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -18,18 +18,19 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.nanorep.nanoclient.AccountParams;
+import com.nanorep.nanoclient.Channeling.NRChanneling;
+import com.nanorep.nanoclient.Connection.NRError;
+import com.nanorep.nanoclient.Interfaces.NRExtraDataListener;
+import com.nanorep.nanoclient.Nanorep;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import nanorep.com.searchdemo.CustomViews.CustomChannelingView;
 import nanorep.com.searchdemo.CustomViews.CustomLikeViewIcons;
-
-import com.nanorep.nanoclient.*;
-import com.nanorep.nanoclient.Channeling.NRChanneling;
-import com.nanorep.nanoclient.Interfaces.NRExtraDataListener;
-
 import nanorep.nanowidget.Components.AbstractViews.NRCustomChannelView;
 import nanorep.nanowidget.Components.AbstractViews.NRCustomLikeView;
 import nanorep.nanowidget.Components.AbstractViews.ViewIdsFactory;
@@ -41,16 +42,24 @@ import nanorep.nanowidget.Fragments.NRMainFragment;
 import nanorep.nanowidget.SearchInjector;
 import nanorep.nanowidget.SearchViewsProvider;
 
-public class MainActivity extends AppCompatActivity  implements Nanorep.NanoRepWidgetListener {
+public class MainActivity extends AppCompatActivity {
 
     private ProgressBar progressBar;
     private SearchViewsProvider myViewsProvider;
+    private Nanorep.NanoRepWidgetListener widgetListener;
+    private DeepLinkFragment deepLinkFragment;
+    private Nanorep nanorepInstance;
+    private Button startNanorepButton;
+    private Button deepLinkButton;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(nanorep.com.searchdemo.R.layout.activity_main);
+
+        initWidgetListener();
+        initViewsProvider();
 
         final EditText accountNameEditText = findViewById(R.id.accountNameEditText);
         final EditText knowledgeBaseEditText = findViewById(R.id.knowledgebaseEditText);
@@ -59,8 +68,8 @@ public class MainActivity extends AppCompatActivity  implements Nanorep.NanoRepW
 
         final EditText deepLinkingArticleId = findViewById(R.id.deepLinkEditText);
 
-        final Button startNanorepButton = findViewById(R.id.startNanorepButton);
-        final Button deepLinkButton = findViewById(R.id.openDeepLinkButton);
+        startNanorepButton = findViewById(R.id.startNanorepButton);
+        deepLinkButton = findViewById(R.id.openDeepLinkButton);
 
         progressBar = findViewById(R.id.progressBar);
         final TextView versionName = findViewById(R.id.versionName);
@@ -124,7 +133,7 @@ public class MainActivity extends AppCompatActivity  implements Nanorep.NanoRepW
                 }
 
                 AccountParams accountParams = new AccountParams(accountName, knowledgeBase);
-
+                
                 // Get the selected context:
                 // For example: Service: "MY-SEARCH-CONTEXT"
                 String nrContext = nrContextEditText.getText().toString();
@@ -138,12 +147,25 @@ public class MainActivity extends AppCompatActivity  implements Nanorep.NanoRepW
                 accountParams.setContextExclusivity(false);
 
                 // Init Nanorep using the account params
-                Nanorep.initialize(accountParams, MainActivity.this);
-                Nanorep.getInstance().setHttpRequestTimeout(15);
+               initializeNanorep(accountParams);
 
                 progressBar.setVisibility(View.VISIBLE);
             }
         });
+    }
+
+    private void initializeNanorep(AccountParams accountParams) {
+        Nanorep.initialize(accountParams);
+        nanorepInstance = Nanorep.getInstance();
+        nanorepInstance.setHttpRequestTimeout(15);
+        nanorepInstance.setWidgetListener(widgetListener);
+    }
+
+    private void initWidgetListener() {
+        widgetListener = new MyWidgetListener();
+    }
+
+    private void initViewsProvider() {
 
         // Search views provider initialization - The views provider is being used to enable the views to be overridden by the customer
         // All the views options are available at the Nanorep search documentation under "customize views"
@@ -218,130 +240,45 @@ public class MainActivity extends AppCompatActivity  implements Nanorep.NanoRepW
     }
 
     /**
-     * Nanorep instance is ready to use
-     */
-    @Override
-    public void onConfigurationFetched() {
-        progressBar.setVisibility(View.INVISIBLE);
-        openMainFragment();
-    }
-
-    /**
-     * Fetch bitmap from network, cache or other resources to use at the labels menu
-     * @param url
-     * @param responder
-     */
-    @Override
-    public void onCachedImageRequest(String url, Nanorep.NRCachedImageResponder responder) {
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.blue_nano_icon);
-        responder.onBitmapResponse(bitmap);
-    }
-
-    @Override
-    public void onInitializationFailure() {
-        progressBar.setVisibility(View.INVISIBLE);
-        Toast.makeText(this, "Failed connecting to server",Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    public void onEmptyDataResponse() {
-        openMainFragment();
-    }
-
-    /**
-     * Handle channeling on the customer side
-     * @param channelingType
-     * @param extraData
-     */
-    @Override
-    public void onChannel(NRChanneling.NRChannelingType channelingType, Object extraData) {
-        switch (channelingType) {
-            case PhoneNumber:
-                Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", (String) extraData, null));
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                try {
-                    startActivity(intent);
-                } catch (ActivityNotFoundException e) {
-                    Log.d("dialerError", "Unable to start dialer");
-                }
-                break;
-        }
-    }
-
-    /**
-     * A function that gives the ability of adding extra data to the channels
-     * @param channelDescription
-     * @param extraData
-     * @param listener
-     */
-    @Override
-    public void personalInfoWithExtraData(String channelDescription, String extraData, NRExtraDataListener listener) {
-
-        // Extra data example:
-        Log.i("formData", "Got form personal data request");
-        Map<String, String> map = new HashMap<>();
-        map.put("number", "122222");
-        listener.onExtraData(map);
-    }
-
-    /**
-     * A callback of a form submission
-     * @param formData
-     * @param fileUploadPaths
-     */
-    @Override
-    public void onSubmitSupportForm(String formData, ArrayList<String> fileUploadPaths) {
-
-        if (formData != null) {
-            Log.i("formData", formData);
-        } else {
-            Log.e("formSubmitError", "the form result is null");
-        }
-
-        if (fileUploadPaths != null) {
-            Log.i("filesToUpload", fileUploadPaths.toString());
-        } else {
-            Log.e("filesToUploadError", "fileUploadPaths is null");
-        }
-    }
-
-    /**
      * Opens an independent fragment for a given articleId and account params
      * @param articleId
      * @param accountParams
      */
     public void onDeepLinking(String articleId, AccountParams accountParams){
 
-        // Extra data sample:
         Map<String, String> map = new HashMap<>();
         map.put("number", "122222");
 
-        // DeepLinkFragment instance:
-        // deepLinkingServicesProvider injects the widget listener and the search provider to the fragment, it can be null
-        DeepLinkFragment deepLinkFragment = DeepLinkFragment.newInstance(articleId, accountParams, new DeepLinkFragment.deepLinkingServicesProvider() {
 
-            // The widget listener can be null - in that case the fragment creates its own listener.
+      /*
+        An example creates a deepLinkFragment with that gets an initialized Nanorep instance
+        initializeNanorep(accountParams);
+        Nanorep nanorepInstance = Nanorep.getInstance();
+
+        deepLinkFragment = DeepLinkFragment.newInstance(articleId, nanorepInstance, new DeepLinkFragment.ServicesProvider(){
+
             @Override
             public Nanorep.NanoRepWidgetListener getWidgetListener() {
-                return null;
+                return widgetListener;
             }
 
-            // The search views provider can be null - in that case the fragment takes Nanorep's default views
             @Override
             public SearchViewsProvider getSearchViewsProvider() {
                 return myViewsProvider;
             }
+        });*/
 
-        });
+        // An example creates a deepLinkFragment with that creates a Nanorep instance and initiates its own widget listener
+        deepLinkFragment = DeepLinkFragment.newInstance(articleId, accountParams, myViewsProvider);
 
-        // sets the extra data to the fragment instance (optional)
         deepLinkFragment.setArticleExtraData(map);
-        progressBar.setVisibility(View.INVISIBLE);
 
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.content_main, deepLinkFragment)
                 .commitAllowingStateLoss();
+
+        deepLinkButton.setClickable(true);
     }
 
     private void openMainFragment() {
@@ -355,4 +292,116 @@ public class MainActivity extends AppCompatActivity  implements Nanorep.NanoRepW
                 }))
                 .commitAllowingStateLoss();
     }
+
+    class MyWidgetListener implements Nanorep.NanoRepWidgetListener {
+
+        public Boolean isFromDeepLink() {
+            return false;
+        }
+
+        /**
+         * Nanorep instance is ready to use
+         */
+        @Override
+        public void onConfigurationFetched() {
+            progressBar.setVisibility(View.INVISIBLE);
+            if (isFromDeepLink()) {
+                deepLinkFragment.fetchAnswer();
+            } else {
+                openMainFragment();
+            }
+        }
+
+        @Override
+        public void onError(NRError error) {
+            Log.e("Widget Error", "error location: " + error.getDomain() +", error code: " + error.getCode() + ", error description: " + error.getDescription());
+
+            if (isFromDeepLink()) {
+                getFragmentManager().popBackStack();
+                nanorepInstance.clearSession();
+                Nanorep.clearInstance();
+            }
+        }
+
+        /**
+         * Fetch bitmap from network, cache or other resources to use at the labels menu
+         * @param url
+         * @param responder
+         */
+        @Override
+        public void onCachedImageRequest(String url, Nanorep.NRCachedImageResponder responder) {
+            Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.blue_nano_icon);
+            responder.onBitmapResponse(bitmap);
+        }
+
+        @Override
+        public void onInitializationFailure() {
+            progressBar.setVisibility(View.INVISIBLE);
+            startNanorepButton.setVisibility(View.VISIBLE);
+            Log.e("Initialization", "Failed connecting to server");
+        }
+
+        @Override
+        public void onEmptyDataResponse() {
+            openMainFragment();
+        }
+
+        /**
+         * Handle channeling on the customer side
+         * @param channelingType
+         * @param extraData
+         */
+        @Override
+        public void onChannel(NRChanneling.NRChannelingType channelingType, Object extraData) {
+            switch (channelingType) {
+                case PhoneNumber:
+                    Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", (String) extraData, null));
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    try {
+                        startActivity(intent);
+                    } catch (ActivityNotFoundException e) {
+                        Log.d("dialerError", "Unable to start dialer");
+                    }
+                    break;
+            }
+        }
+
+        /**
+         * A function that gives the ability of adding extra data to the channels
+         * @param channelDescription
+         * @param extraData
+         * @param listener
+         */
+        @Override
+        public void personalInfoWithExtraData(String channelDescription, String extraData, NRExtraDataListener listener) {
+
+            // Extra data example:
+            Log.i("formData", "Got form personal data request");
+            Map<String, String> map = new HashMap<>();
+            map.put("number", "122222");
+            listener.onExtraData(map);
+        }
+
+        /**
+         * A callback of a form submission
+         * @param formData
+         * @param fileUploadPaths
+         */
+        @Override
+        public void onSubmitSupportForm(String formData, ArrayList<String> fileUploadPaths) {
+
+            if (formData != null) {
+                Log.i("formData", formData);
+            } else {
+                Log.e("formSubmitError", "the form result is null");
+            }
+
+            if (fileUploadPaths != null) {
+                Log.i("filesToUpload", fileUploadPaths.toString());
+            } else {
+                Log.e("filesToUploadError", "fileUploadPaths is null");
+            }
+        }
+    };
+
 }
