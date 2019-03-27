@@ -104,6 +104,7 @@ public class MainActivity extends AppCompatActivity implements
 
     private ImageButton startButton;
     private ProgressBar progressBar;
+    private EditText accountName, kb, server, apikey;
 
     private NRAccount account;
     private String conversationId;
@@ -118,6 +119,8 @@ public class MainActivity extends AppCompatActivity implements
     private ConnectivityReceiver connectivityReceiver = new ConnectivityReceiver();
     private ConcurrentLinkedQueue<StatementRequest> failedStatements = new ConcurrentLinkedQueue<>();
     private SoftReference<NRConversationFragment> conversationFragment;
+
+    private PrevDataHandler accountPreferences = new PrevDataHandler();
 
     /**
      * in use when previously failed statements are posted to indicate if the connection is done again
@@ -189,6 +192,25 @@ public class MainActivity extends AppCompatActivity implements
                 }
             }
         });
+
+        accountName = (EditText) findViewById(R.id.account_name_edit_text);
+        apikey = (EditText) findViewById(R.id.api_key_edit_text);
+        kb = (EditText) findViewById(R.id.knowledgebase_edit_text);
+        server = (EditText) findViewById(R.id.server_edit_text);
+
+        fillFieldsFromShared();
+    }
+
+    private void fillFieldsFromShared() {
+        Map<String, Object> data = accountPreferences.getFormData(this);
+
+        accountName.setText((String)data.get(PrevDataHandler.Account_key));
+
+        kb.setText((String)data.get(PrevDataHandler.Kb_key));
+
+        server.setText((String)data.get(PrevDataHandler.Server_key));
+
+        apikey.setText((String)data.get(PrevDataHandler.ApiKey_key));
     }
 
     private void setLoadingDisplay(boolean isLoading) {
@@ -232,6 +254,8 @@ public class MainActivity extends AppCompatActivity implements
             return;
         }
 
+        accountPreferences.saveChatData(this, account);
+
         account.setContext(conversationContext);
         account.setEntities(new String[]{"SUBSCRIBER"});
 
@@ -252,15 +276,15 @@ public class MainActivity extends AppCompatActivity implements
 
     @NonNull
     private NRAccount getAccount() {
-        String accountName = "", apiKey = "", kb = "", server = "";
+        String accountVal = "", apiKeyVal = "", kbVal = "", serverVal = "";
         try {
-            accountName = ((EditText) findViewById(R.id.account_name_edit_text)).getText().toString();
-            apiKey = ((EditText) findViewById(R.id.api_key_edit_text)).getText().toString();
-            kb = ((EditText) findViewById(R.id.knowledgebase_edit_text)).getText().toString();
-            server = ((EditText) findViewById(R.id.server_edit_text)).getText().toString();
+            accountVal = accountName.getText().toString();
+            apiKeyVal = apikey.getText().toString();
+            kbVal = kb.getText().toString();
+            serverVal = server.getText().toString();
         }catch (Exception ignored){}
 
-        return new NRAccount( accountName, apiKey, kb, server, null);
+        return new NRAccount( accountVal, apiKeyVal, kbVal, serverVal, null);
     }
 
     private Conversation fetchAccountConversationData(String account) {
