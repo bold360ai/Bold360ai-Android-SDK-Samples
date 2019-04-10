@@ -1,12 +1,14 @@
 <resources>
-    <string name="app_name">Nanorep</string>
-    <string name="helpful" translatable="false">Was this helpful?</string>
-    <string name="sorry" translatable="false">We’re sorry to hear that</string>
-    <string name="thanks" translatable="false">Thanks for your feedback</string>
-    <string name="send_issue" translatable="false">Please send us your issue by email</string>
-    <string name="account_form_name" translatable="false">Please fill in your account</string>
-    <string name="account_form_kb" translatable="false">Please fill in your kb</string>
-    <string name="null_file_path_error" translatable="false">fileUploadPaths is null</string>
-    <string name="dialer_error" translatable="false">Unable to start dialer</string>
+    <string name="app_name">NanoWidget</string>
+    <string name="surveyTitle">Was this article helpful?</string>
+    <string name="actionPrompt">What\'s wrong with this answer?</string>
+    <string name="ok">Ok</string>
+    <string name="yes">YES</string>
+    <string name="no">NO</string>
+    <string name="clear">Clear</string>
+    <string name="noResultsTitle">No Results</string>
+    <string name="pleaseSelect">Choose the issue</string>
+    <string name="chooseFile">Select a file</string>
+    <string name="contextDialogTitle">Multiple answers are available. Choose context:</string>
 
 </resources>

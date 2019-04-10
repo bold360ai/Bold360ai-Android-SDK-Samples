@@ -1,0 +1,15 @@
+<resources>
+    
+    <string name="app_name">NanoWidget</string>
+    <string name="surveyTitle">Bài viết này có hữu ích không?</string>
+    <string name="yes">Có</string>
+    <string name="no">Không</string>
+    <string name="ok">ОК</string>
+    <string name="clear">Xóa</string>
+    <string name="actionPrompt">Vui lòng miêu tả lỗi sai trong câu trả lời này hoặc tiếp tục cuộc trò chuyện</string>
+    <string name="noResultsTitle">Không có kết quả</string>
+    <string name="pleaseSelect">Vui lòng chọn</string>
+    <string name="chooseFile">Chọn tập tin…</string>
+    <string name="contextDialogTitle">Có nhiều câu trả lời. Chọn trường hợp cụ thể:</string>
+
+</resources>
