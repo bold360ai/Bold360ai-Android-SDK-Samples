@@ -27,6 +27,7 @@ import com.nanorep.convesationui.structure.OptionActionListener;
 import com.nanorep.convesationui.structure.UiConfigurations;
 import com.nanorep.convesationui.structure.history.HistoryListener;
 import com.nanorep.convesationui.structure.history.HistoryProvider;
+import com.nanorep.convesationui.structure.model.FileUploadData;
 import com.nanorep.convesationui.viewholder.base.ChatElementViewHolder;
 import com.nanorep.convesationui.viewholder.controllers.ChatElementController;
 import com.nanorep.convesationui.views.AgentTypingSettingsProvider;
@@ -1014,17 +1015,26 @@ class MyCarouselViewsProvider extends CarouselViewsProvider {
         }
 
         @Override
-        public int getUserInputLayout() {
-            return R.layout.user_input_view_holder_custom;
+        public FileUploadData getFileUploadData(Context context) {
+            FileUploadData fileUploadData = super.getFileUploadData(context);
+            fileUploadData.setViewId(R.id.my_upload_view);
+        //    fileUploadData.setDrawable(context.getResources().getDrawable(R.drawable.email));
+            return fileUploadData;
         }
 
         @Override
-        public AgentTypingSettingsProvider getAgentTypingSettingsProvider() {
+        public int getUserInputLayout() {
+            return R.layout.custom_user_input_view;
+        }
+
+        @Override
+        public AgentTypingSettingsProvider getAgentTypingSettingsProvider(Context context) {
             AgentTypingSettingsProvider agentTypingSettingsProvider = new AgentTypingSettingsProvider();
-            agentTypingSettingsProvider.setMargins(0, 0, 0, 49);
+            agentTypingSettingsProvider.setMargins(0, 16, 0, 58);
             agentTypingSettingsProvider.setGravity(Gravity.BOTTOM);
             agentTypingSettingsProvider.setCompoundText("please wait");
-            agentTypingSettingsProvider.setCompoundDrawable(R.drawable.ic_more_horiz_black_24dp);
+            agentTypingSettingsProvider.setDrawablePadding(4);
+            agentTypingSettingsProvider.setCompoundDrawable(R.drawable.channel_chat_icon);
             return agentTypingSettingsProvider;
         }
 

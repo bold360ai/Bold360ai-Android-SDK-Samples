@@ -5,7 +5,7 @@
     android:id="@+id/user_input_custom_container"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="10dp">
+    android:layout_marginTop="20dp">
 
     <ImageView android:id="@+id/back_image"
         android:layout_width="match_parent"
@@ -13,7 +13,7 @@
         android:layout_marginBottom="10dp"
         android:minHeight="48dp"
         android:paddingBottom="2dp"
-        android:src="@drawable/user_input_background" />
+        android:src="@drawable/custom_user_input_background" />
 
     <LinearLayout
         android:id="@+id/user_input_container2"
@@ -47,6 +47,16 @@
 
             android:textSize="16sp"
             tools:ignore="RtlHardcoded" />
+
+        <ImageView
+            android:id="@+id/my_upload_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="2dp"
+            android:layout_marginRight="2dp"
+            android:layout_marginBottom="6dp"/>
 
         <com.nanorep.convesationui.views.SendView
             android:id="@+id/user_input_send_view"
