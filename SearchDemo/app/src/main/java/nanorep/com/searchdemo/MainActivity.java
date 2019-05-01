@@ -39,14 +39,14 @@ import nanorep.nanowidget.Components.AbstractViews.dislikeDialog.NRCustomDislike
 import nanorep.nanowidget.Components.NRDislikeDialog;
 import nanorep.nanowidget.Fragments.DeepLinkFragment;
 import nanorep.nanowidget.Fragments.NRMainFragment;
+import nanorep.nanowidget.SearchInjector;
 import nanorep.nanowidget.SearchViewsProvider;
-import nanorep.nanowidget.interfaces.FragmentInteraction;
 
 /**
  * FragmentInteraction is an interface that provide data to the SDK fragments
  */
 
-public class MainActivity extends AppCompatActivity implements FragmentInteraction {
+public class MainActivity extends AppCompatActivity {
 
     private ProgressBar startSDKProgressBar;
     private ProgressBar deepLinkProgressBar;
@@ -86,11 +86,7 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
         deepLinkProgressBar = findViewById(R.id.deeplinkProgressBar);
         final TextView versionName = findViewById(R.id.versionName);
 
-        versionName.setText(BuildConfig.VERSION_NAME);
-
-        deepLinkingArticleId.setText("924461993");
-        accountNameEditText.setText("gojek");
-        knowledgeBaseEditText.setText("English");
+        versionName.setText(nanorep.nanowidget.BuildConfig.VERSION_NAME);
 
         deepLinkButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -270,7 +266,7 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
         Map<String, String> map = new HashMap<>();
         map.put("number", "122222");
 
-        deepLinkFragment = DeepLinkFragment.newInstance(articleId, accountParams);
+        deepLinkFragment = DeepLinkFragment.newInstance(articleId, accountParams, myViewsProvider);
 
         deepLinkFragment.setArticleExtraData(map);
 
@@ -285,23 +281,26 @@ public class MainActivity extends AppCompatActivity implements FragmentInteracti
     }
 
     private void openMainFragment() {
+
+        NRMainFragment mainFragment = NRMainFragment.newInstance(new SearchInjector() {
+            @Override
+            public SearchViewsProvider getUiProvider() {
+                return myViewsProvider;
+            }
+        });
+
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.content_main, NRMainFragment.newInstance())
+                .replace(R.id.content_main, mainFragment)
                 .commit();
 
         startSDKProgressBar.setVisibility(View.INVISIBLE);
         startSDKButton.setVisibility(View.VISIBLE);
     }
 
-    @Override
-    public SearchViewsProvider getSavedViewsProvider() {
-        return myViewsProvider;
-    }
-
     class MyWidgetListener implements Nanorep.NanoRepWidgetListener {
 
-        public Boolean isFromDeepLink() {
+        Boolean isFromDeepLink() {
             return false;
         }
 
