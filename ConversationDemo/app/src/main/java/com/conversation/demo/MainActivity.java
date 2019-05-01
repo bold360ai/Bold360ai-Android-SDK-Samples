@@ -258,7 +258,7 @@ public class MainActivity extends AppCompatActivity implements
         accountPreferences.saveChatData(this, account);
 
         account.setContext(conversationContext);
-        account.setEntities(new String[]{"SUBSCRIBER"});
+        account.setEntities(new String[]{"SUBSCRIBERS"});
 
         ConversationSettings settings = new ConversationSettings()
                 .speechEnable(true).enableMultiRequestsOnLiveAgent(true).setReadMoreThreshold(320)
