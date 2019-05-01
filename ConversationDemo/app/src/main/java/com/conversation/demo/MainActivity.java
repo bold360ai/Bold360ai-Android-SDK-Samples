@@ -1028,6 +1028,11 @@ class MyCarouselViewsProvider extends CarouselViewsProvider {
         }
 
         @Override
+        public int getChatToUserInputMargin() {
+            return getPx(26);
+        }
+
+        @Override
         public AgentTypingSettingsProvider getAgentTypingSettingsProvider(Context context) {
             AgentTypingSettingsProvider agentTypingSettingsProvider = new AgentTypingSettingsProvider();
             agentTypingSettingsProvider.setMargins(0, 16, 0, 58);
