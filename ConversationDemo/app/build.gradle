@@ -54,15 +54,10 @@ android {
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
 
-    implementation 'com.nanorep.devconversation:ui:1.6.3.1'
-    implementation 'com.nanorep.devconversation:engine:1.6.3.1'
-    implementation 'com.nanorep.devcore:sdkcore:1.6.3.1'
-    implementation 'com.nanorep.devcore:accessibility:1.6.3.1'
-
-    /*implementation 'com.nanorep.conversation:ui:1.6.3'
-    implementation 'com.nanorep.conversation:engine:1.6.3'
-    implementation 'com.nanorep.core:sdkcore:1.6.3'
-    implementation 'com.nanorep.core:accessibility:1.6.3'*/
+    implementation 'com.nanorep.conversation:ui:1.6.3.3'
+    implementation 'com.nanorep.conversation:engine:1.6.3.3'
+    implementation 'com.nanorep.core:sdkcore:1.6.3.3'
+    implementation 'com.nanorep.core:accessibility:1.6.3.3'
 
     implementation "com.android.support:support-annotations:$androidSupportVer"
     implementation "com.android.support:appcompat-v7:$androidSupportVer"
