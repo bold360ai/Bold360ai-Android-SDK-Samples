@@ -1,6 +1,8 @@
 package com.conversation.demo;
 
+import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 
 import com.nanorep.nanoengine.chatelement.ChatElement;
 import com.nanorep.nanoengine.chatelement.ContentChatElement;
@@ -16,7 +18,7 @@ class DynamicBubbleBind {
     @ChatElement.Companion.ChatElementType
     private int lastType;
 
-    BubbleData onBind(ContentChatElement element, int position, int total) {
+    BubbleData onBind(Context context, ContentChatElement element, int position, int total) {
         boolean displayAvatar = true;
         if (position != total-1 && lastScope == element.getScope() && lastType == element.getType()) {
             displayAvatar = false;
@@ -25,7 +27,13 @@ class DynamicBubbleBind {
         lastType = element.getType();
         lastScope = element.getScope();
 
-        return new BubbleData().displayAvatar(displayAvatar).textColor(element.getScope().isLive()? Color.BLUE:-1);
+        boolean isLive = element.getScope().isLive();
+        Log.d("DynamicBubbleBind", "isLive = "+isLive);
+        int textColor = isLive ? Color.RED :
+                (context.getResources().getColor(lastType == ChatElement.OutgoingElement ?
+                        R.color.outgoing_text : R.color.incoming_text));
+
+        return new BubbleData().displayAvatar(displayAvatar).textColor(textColor);
     }
 
 

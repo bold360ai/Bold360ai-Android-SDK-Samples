@@ -42,7 +42,8 @@ public class DemoRemoteViewHolder extends BubbleRemoteViewHolder {
 
         ContentChatElement remoteChatElement = (ContentChatElement) element;
 
-        DynamicBubbleBind.BubbleData bubbleData = dynamicBubbleBind.onBind(remoteChatElement, position, totalCount);
+        DynamicBubbleBind.BubbleData bubbleData = dynamicBubbleBind.onBind(itemView.getContext(),
+                remoteChatElement, position, totalCount);
 
         if(bubbleData.displayAvatar()) {
             avatarImageView.setImageResource(remoteChatElement.getScope().isLive() ?

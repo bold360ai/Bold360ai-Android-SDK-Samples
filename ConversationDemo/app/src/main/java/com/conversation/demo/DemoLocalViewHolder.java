@@ -31,7 +31,8 @@ public class DemoLocalViewHolder extends BubbleLocalViewHolder {
     public void bind(@NonNull ChatElement element, int position, int totalCount) {
         super.bind(element, position, totalCount);
 
-        DynamicBubbleBind.BubbleData bubbleData = dynamicBubbleBind.onBind((LocalChatElement)element, position, totalCount);
+        DynamicBubbleBind.BubbleData bubbleData = dynamicBubbleBind.onBind(itemView.getContext(),
+                (LocalChatElement)element, position, totalCount);
         int color = bubbleData.getTextColor();
         if(color != -1){
             getBubbleText().setStyle(new StyleConfig(null, color, null), null);
