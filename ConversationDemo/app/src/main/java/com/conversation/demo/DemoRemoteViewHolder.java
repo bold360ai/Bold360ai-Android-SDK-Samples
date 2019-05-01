@@ -55,7 +55,7 @@ public class DemoRemoteViewHolder extends BubbleRemoteViewHolder {
         }
 
         int color = bubbleData.getTextColor();
-        if(color != -1){
+        if(color != DynamicBubbleBind.NoColor){
             getBubbleText().setStyle(new StyleConfig(null, color, null), null);
         }
     }
