@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+
+
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -7,6 +9,12 @@
     android:focusable="true"
     android:focusableInTouchMode="true">
 
+    <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:background="@drawable/bold_form_bg"
+        >
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -26,7 +34,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Account Name"
-                android:gravity="center"
+                android:gravity="start"
                 android:textSize="18sp"/>
 
         </android.support.design.widget.TextInputLayout>
@@ -44,7 +52,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Knowledge Base"
-                android:gravity="center"
+                android:gravity="start"
                 android:textSize="18sp"/>
 
         </android.support.design.widget.TextInputLayout>
@@ -63,7 +71,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Api Key"
-                android:gravity="center"
+                android:gravity="start"
                 android:textSize="18sp"/>
 
         </android.support.design.widget.TextInputLayout>
@@ -81,29 +89,55 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Server"
-                android:gravity="center"
+                android:gravity="start"
                 android:textSize="18sp"/>
 
         </android.support.design.widget.TextInputLayout>
 
 
-        <!--<FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="2">
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginTop="40dp"
+            android:padding="4dp">
 
-            <Button
+            <Switch android:id="@+id/wm_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/use_the_default_demo_details"
-                android:onClick="onDefaultAccountDetails"
-                android:textSize="16sp"
-                style="@style/DemoSubmitButton"
-                android:padding="15dp"
-                android:layout_gravity="center"/>
+                android:text="Welcome message"
+                android:onClick="onSetWelcomeMessage"
+                android:textSize="14sp"
+                android:textColor="@android:color/darker_gray"
+                android:layout_gravity="top|start"
+                android:paddingStart="2dp"
+                android:paddingLeft="2dp" />
+
+            <!--<android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/wm_input"
+                android:layout_marginTop="20dp"
+                app:hintTextAppearance="@style/custom_text_appearance"
+                android:visibility="gone"
+                android:padding="0dp">-->
+
+
+                <EditText
+                    android:id="@+id/wm_edit_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Insert article id"
+                    android:gravity="start"
+                    android:layout_marginTop="30dp"
+                    android:textSize="14sp"
+                    android:visibility="invisible"
+                    android:inputType="number"/>
+
+            <!--</android.support.design.widget.TextInputLayout>-->
 
         </FrameLayout>
--->
+
         <!--<TextView
             android:textAppearance="?android:textAppearanceMedium"
             android:id="@+id/historySizeTextView"
@@ -112,22 +146,25 @@
             android:layout_marginBottom="10dp"/>-->
 
         <FrameLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="5"
-            android:scaleY="3"
-            android:scaleX="3"
             android:layout_marginTop="50dp">
 
-            <ImageButton
+            <TextView
                 android:id="@+id/startButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/start_chat"
-                android:src="@drawable/bold_360"
+                android:drawableLeft="@drawable/bold_360"
+                android:drawablePadding="4dp"
+                android:gravity="center"
                 android:background="@android:color/transparent"
                 android:onClick="onStartClicked"
-                android:layout_gravity="center"/>
+                android:layout_gravity="start|bottom"
+                android:layout_marginBottom="10dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginLeft="4dp" />
 
             <ProgressBar
                 android:visibility="invisible"
@@ -140,7 +177,7 @@
         </FrameLayout>
 
     </LinearLayout>
-
+    </ScrollView>
     <FrameLayout
         android:id="@+id/content_main"
         android:layout_width="match_parent"

@@ -15,8 +15,9 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nanorep.convesationui.fragments.NRConversationFragment;
@@ -103,9 +104,11 @@ public class MainActivity extends AppCompatActivity implements
     public static final int HistoryPageSize = 8;
     public static final String END_HANDOVER_SESSION = "bye bye handover";
 
-    private ImageButton startButton;
+    private TextView startButton;
     private ProgressBar progressBar;
     private EditText accountName, kb, server, apikey;
+    private EditText welcomeArticleField;
+    private Switch welcomeArticleSwitch;
 
     private NRAccount account;
     private String conversationId;
@@ -172,6 +175,7 @@ public class MainActivity extends AppCompatActivity implements
         }
     };
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -200,6 +204,9 @@ public class MainActivity extends AppCompatActivity implements
         server = (EditText) findViewById(R.id.server_edit_text);
 
         fillFieldsFromShared();
+
+        welcomeArticleField = findViewById(R.id.wm_edit_text);
+        welcomeArticleSwitch = findViewById(R.id.wm_button);
     }
 
     private void fillFieldsFromShared() {
@@ -267,6 +274,15 @@ public class MainActivity extends AppCompatActivity implements
                 .enableOfflineMultiRequests(true) // defaults to true
                 .enableLiveAgent(true)
                 .datestamp(true, new FriendlyDatestampFormatFactory(this));
+
+        String welcomeArticleId = null;
+        if(welcomeArticleSwitch.isChecked()){
+            welcomeArticleId = welcomeArticleField.getText().toString();
+            settings.setWelcomeMessage(welcomeArticleId);
+        }
+
+        Log.i(TAG, "Welcome message will be "+(welcomeArticleId != null ? ("set to "+welcomeArticleId) :
+                "will be as configured in console"));
 
         //-> to configure the default text configuration to all bubbles text add something like the following:
         //settings.textStyleConfig(new StyleConfig(getPx(23), Color.BLUE, null));
@@ -872,6 +888,14 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
+    public void onSetWelcomeMessage(View view) {
+        welcomeArticleField.setVisibility(welcomeArticleSwitch.isChecked() ? View.VISIBLE : View.INVISIBLE);
+
+        if(!welcomeArticleSwitch.isChecked()){
+            welcomeArticleField.setText("");
+        }
+    }
+
 //</editor-fold>
 
 //<editor-fold desc=">>>>>>>>>  Carousel overriding implementations:  <<<<<<<<<">
@@ -1017,15 +1041,15 @@ class MyCarouselViewsProvider extends CarouselViewsProvider {
         @Override
         public FileUploadData getFileUploadData(Context context) {
             FileUploadData fileUploadData = super.getFileUploadData(context);
-            fileUploadData.setViewId(R.id.my_upload_view);
+//            fileUploadData.setViewId(R.id.my_upload_view);
         //    fileUploadData.setDrawable(context.getResources().getDrawable(R.drawable.email));
             return fileUploadData;
         }
 
-        @Override
+        /*@Override
         public int getUserInputLayout() {
             return R.layout.custom_user_input_view;
-        }
+        }*/
 
         @Override
         public int getChatToUserInputMargin() {
