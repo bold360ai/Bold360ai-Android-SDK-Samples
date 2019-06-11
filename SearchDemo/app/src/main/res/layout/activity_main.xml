@@ -1,117 +1,198 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/content_main">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <LinearLayout
         android:id="@+id/linearlayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:orientation="vertical">
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp">
-
-            <android.support.design.widget.TextInputEditText
-                android:inputType="text"
-                android:maxLines="1"
-                android:id="@+id/accountNameEditText"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:hint="account name" />
-
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp">
-
-            <android.support.design.widget.TextInputEditText
-                android:inputType="text"
-                android:maxLines="1"
-                android:id="@+id/knowledgebaseEditText"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:text=""
-                android:hint="knowledge base" />
-
-        </android.support.design.widget.TextInputLayout>
-
-        <android.support.design.widget.TextInputLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp">
-
-            <android.support.design.widget.TextInputEditText
-                android:inputType="text"
-                android:maxLines="1"
-                android:id="@+id/nrContextEditText"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:hint="nanoRep Context" />
-
-        </android.support.design.widget.TextInputLayout>
-
-        <CheckBox
-            android:id="@+id/labelModeCheckbox"
-            android:layout_marginTop="20dp"
-            android:text="Label selection prior to FAQs"
-            android:checked="false"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <Button
-            android:id="@+id/startNanorepButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="GO" />
-
+        android:orientation="vertical"
+        tools:ignore="UselessParent"
+        android:layout_margin="40dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="bottom|center"
-            android:layout_marginTop="20dp">
-            <EditText
-                android:id="@+id/deepLinkEditText"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:hint="valid article Id"
-                android:maxLines="2"
-                android:layout_marginRight="30dp"/>
-            <Button
-                android:id="@+id/openDeepLinkButton"
-                android:layout_width="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_marginEnd="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginStart="40dp">
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="deepLink"/>
+                android:layout_marginBottom="10dp">
+
+                <android.support.design.widget.TextInputEditText
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:id="@+id/accountNameEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="account name"
+                    android:gravity="center"/>
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp">
+
+                <android.support.design.widget.TextInputEditText
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:id="@+id/knowledgebaseEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="knowledge base"
+                    android:gravity="center"/>
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp">
+
+                <android.support.design.widget.TextInputEditText
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:id="@+id/nrContextEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="nanoRep Context"
+                    android:gravity="center"/>
+
+            </android.support.design.widget.TextInputLayout>
 
         </LinearLayout>
 
-        <ProgressBar
-            android:id="@+id/progressBar"
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:visibility="invisible" />
+            android:orientation="vertical"
+            android:layout_margin="6dp">
 
-        <TextView
-            android:id="@+id/versionName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:layout_marginTop="5dp"/>
+            <CheckBox
+                android:id="@+id/labelModeCheckbox"
+                android:layout_margin="5dp"
+                android:text="Label selection prior to FAQs"
+                android:checked="false"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
 
+            <CheckBox
+                android:layout_margin="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Context Exclusivity"
+                android:id="@+id/contextExclusivity"/>
+
+            <CheckBox
+                android:layout_margin="5dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="open links internally"
+                android:id="@+id/openLinksInternallyCheckBox"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginTop="20dp">
+
+            <FrameLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginBottom="18dp">
+
+                <ProgressBar
+                    android:id="@+id/startSDKProgressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:visibility="invisible"
+                    android:layout_gravity="center_horizontal"/>
+
+                <Button
+                    android:id="@+id/goButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="GO"
+                    android:visibility="visible"
+                    style="@style/main_button"/>
+
+            </FrameLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="40dp"
+                android:layout_marginRight="40dp"
+                android:layout_marginLeft="40dp"
+                android:layout_marginStart="40dp">
+
+                <EditText
+                    android:id="@+id/deeplinkEditText"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:hint="valid article Id"
+                    android:maxLines="2"
+                    android:layout_marginEnd="10dp"
+                    android:layout_marginRight="10dp" />
+
+                <FrameLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center">
+
+                    <ProgressBar
+                        android:id="@+id/deeplinkProgressBar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center_horizontal"
+                        android:visibility="invisible"/>
+
+                    <Button
+                        android:id="@+id/deepLinkButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="deepLink"
+                        style="@style/main_button"/>
+
+                </FrameLayout>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/versionName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="bottom"
+                android:layout_gravity="center_horizontal"
+                android:textColor="@color/colorPrimary"
+                android:layout_margin="20dp"
+                android:text="1.1.1"/>
+
+        </LinearLayout>
     </LinearLayout>
-
-    <FrameLayout
-        android:id="@+id/content_main"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+    </ScrollView>
 </FrameLayout>
