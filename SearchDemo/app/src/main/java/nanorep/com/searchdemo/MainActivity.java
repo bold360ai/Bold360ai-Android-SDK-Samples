@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -17,7 +18,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.nanorep.nanoclient.AccountParams;
 import com.nanorep.nanoclient.Channeling.NRChanneling;
@@ -42,20 +43,17 @@ import nanorep.nanowidget.Fragments.NRMainFragment;
 import nanorep.nanowidget.SearchInjector;
 import nanorep.nanowidget.SearchViewsProvider;
 
-/**
- * FragmentInteraction is an interface that provide data to the SDK fragments
- */
-
 public class MainActivity extends AppCompatActivity {
 
     private ProgressBar startSDKProgressBar;
     private ProgressBar deepLinkProgressBar;
     private SearchViewsProvider myViewsProvider;
     private Nanorep.NanoRepWidgetListener widgetListener;
-    private DeepLinkFragment deepLinkFragment;
     private Nanorep nanorepInstance;
     private Button startSDKButton;
     private Button deepLinkButton;
+    private String articleIdForDeepLinking;
+    public static Boolean isFromDeepLink = false;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -84,19 +82,17 @@ public class MainActivity extends AppCompatActivity {
 
         startSDKProgressBar = findViewById(R.id.startSDKProgressBar);
         deepLinkProgressBar = findViewById(R.id.deeplinkProgressBar);
-        final TextView versionName = findViewById(R.id.versionName);
-
-        versionName.setText("2.0.1");
 
         deepLinkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
+                isFromDeepLink = true;
 
+                // Get account params from the fields:
                 String accountName = accountNameEditText.getText().toString();
                 String knowledgeBase = knowledgeBaseEditText.getText().toString();
-                String articleId = deepLinkingArticleId.getText().toString();
-
+                articleIdForDeepLinking = deepLinkingArticleId.getText().toString();
 
                 hideKeyboard(view);
 
@@ -112,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-                if (articleId.length() == 0) {
+                if (articleIdForDeepLinking.length() == 0) {
                     deepLinkingArticleId.requestFocus();
                     deepLinkingArticleId.setError("Please fill a valid articleId");
                     return;
@@ -121,17 +117,20 @@ public class MainActivity extends AppCompatActivity {
                 deepLinkProgressBar.setVisibility(View.VISIBLE);
                 deepLinkButton.setVisibility(View.INVISIBLE);
 
+                // Set the account params properties
                 AccountParams accountParams = new AccountParams(accountName, knowledgeBase);
-
                 accountParams.setOpenLinksInternally(openLinksInternallyCheckBox.isChecked());
 
-                onDeepLinking(articleId, accountParams);
+                // Init Nanorep using the account params
+                initializeNanorep(accountParams);
             }
         });
 
         startSDKButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View button) {
+
+                isFromDeepLink = false;
 
                 // Get account params from the fields:
                 String accountName = accountNameEditText.getText().toString();
@@ -257,15 +256,13 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Opens an independent fragment for a given articleId and account params
      * @param articleId
-     * @param accountParams
      */
-    public void onDeepLinking(String articleId, AccountParams accountParams){
+    public void onDeepLinking(String articleId){
 
         Map<String, String> map = new HashMap<>();
         map.put("number", "122222");
 
-        // An example creates a deepLinkFragment with that gets an initialized Nanorep instance
-        deepLinkFragment = DeepLinkFragment.newInstance(articleId, nanorepInstance, new DeepLinkFragment.deepLinkingServicesProvider(){
+        DeepLinkFragment deepLinkFragment = DeepLinkFragment.newInstance(articleId, nanorepInstance, new DeepLinkFragment.deepLinkingServicesProvider() {
 
             @Override
             public Nanorep.NanoRepWidgetListener getWidgetListener() {
@@ -309,18 +306,18 @@ public class MainActivity extends AppCompatActivity {
 
     class MyWidgetListener implements Nanorep.NanoRepWidgetListener {
 
-        Boolean isFromDeepLink() {
-            return false;
-        }
-
         /**
          * Nanorep instance is ready to use
          */
         @Override
         public void onConfigurationFetched() {
             startSDKProgressBar.setVisibility(View.INVISIBLE);
-            if (isFromDeepLink()) {
-                deepLinkFragment.fetchAnswer();
+            if (isFromDeepLink) {
+                if (TextUtils.isDigitsOnly(articleIdForDeepLinking)) {
+                    onDeepLinking(articleIdForDeepLinking);
+                } else {
+                    Toast.makeText(MainActivity.this, "Invalid ArticleID", Toast.LENGTH_SHORT).show();
+                }
             } else {
                 openMainFragment();
             }
@@ -329,12 +326,6 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onError(NRError error) {
             Log.e("Widget Error", "error location: " + error.getDomain() +", error code: " + error.getCode() + ", error description: " + error.getDescription());
-
-            if (isFromDeepLink()) {
-                getFragmentManager().popBackStack();
-                nanorepInstance.clearSession();
-                Nanorep.clearInstance();
-            }
         }
 
         /**
@@ -352,7 +343,7 @@ public class MainActivity extends AppCompatActivity {
         public void onInitializationFailure() {
             startSDKProgressBar.setVisibility(View.INVISIBLE);
             startSDKButton.setVisibility(View.VISIBLE);
-            Log.e("Initialization", "Failed connecting to server");
+            Toast.makeText(MainActivity.this, "Failed connecting with server", Toast.LENGTH_SHORT).show();
         }
 
         @Override
