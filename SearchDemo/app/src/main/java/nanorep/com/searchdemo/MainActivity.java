@@ -86,15 +86,17 @@ public class MainActivity extends AppCompatActivity {
         deepLinkProgressBar = findViewById(R.id.deeplinkProgressBar);
         final TextView versionName = findViewById(R.id.versionName);
 
-        versionName.setText(nanorep.nanowidget.BuildConfig.VERSION_NAME);
+        versionName.setText("2.0.1");
 
         deepLinkButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
+
                 String accountName = accountNameEditText.getText().toString();
                 String knowledgeBase = knowledgeBaseEditText.getText().toString();
                 String articleId = deepLinkingArticleId.getText().toString();
+
 
                 hideKeyboard(view);
 
@@ -232,7 +234,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean isSearchBarAlwaysOnTop() {
-                return false;
+                return true;
             }
 
             @Override
@@ -242,12 +244,12 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public boolean showChannelConfirmationDialogs(NRChanneling channeling) {
-                return false;
+                return true;
             }
 
             @Override
             public boolean showFeedbackConfirmationDialogs() {
-                return false;
+                return true;
             }
         };
     }
@@ -262,13 +264,25 @@ public class MainActivity extends AppCompatActivity {
         Map<String, String> map = new HashMap<>();
         map.put("number", "122222");
 
-        deepLinkFragment = DeepLinkFragment.newInstance(articleId, accountParams, myViewsProvider);
+        // An example creates a deepLinkFragment with that gets an initialized Nanorep instance
+        deepLinkFragment = DeepLinkFragment.newInstance(articleId, nanorepInstance, new DeepLinkFragment.deepLinkingServicesProvider(){
+
+            @Override
+            public Nanorep.NanoRepWidgetListener getWidgetListener() {
+                return null;
+            }
+
+            @Override
+            public SearchViewsProvider getSearchViewsProvider() {
+                return myViewsProvider;
+            }
+        });
 
         deepLinkFragment.setArticleExtraData(map);
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.content_main, deepLinkFragment)
+                .replace(R.id.content_main, deepLinkFragment, articleId)
                 .addToBackStack(null)
                 .commit();
 
@@ -278,16 +292,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void openMainFragment() {
 
-        NRMainFragment mainFragment = NRMainFragment.newInstance(new SearchInjector() {
-            @Override
-            public SearchViewsProvider getUiProvider() {
-                return myViewsProvider;
-            }
-        });
-
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.content_main, mainFragment)
+                .replace(R.id.content_main, NRMainFragment.newInstance(new SearchInjector() {
+                    @Override
+                    public SearchViewsProvider getUiProvider() {
+                        return myViewsProvider;
+                    }
+                }), NRMainFragment.TAG)
+                .addToBackStack(null)
                 .commit();
 
         startSDKProgressBar.setVisibility(View.INVISIBLE);

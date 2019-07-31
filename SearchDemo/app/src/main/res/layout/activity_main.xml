@@ -190,7 +190,7 @@
                 android:layout_gravity="center_horizontal"
                 android:textColor="@color/colorPrimary"
                 android:layout_margin="20dp"
-                android:text="1.1.1"/>
+                android:text="2.0.0"/>
 
         </LinearLayout>
     </LinearLayout>
