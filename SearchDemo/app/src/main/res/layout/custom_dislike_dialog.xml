@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@drawable/gojek_dialog_background"
+    android:background="@drawable/dialog_background"
     android:layout_gravity="center"
     android:padding="16dp">
 
@@ -43,7 +43,7 @@
             android:checked="true"
             android:textColor="@color/black"
             android:layout_marginBottom="15dp"
-            android:buttonTint="@color/gojekGreen" />
+            android:buttonTint="@color/green" />
 
         <RadioButton
             android:id="@+id/feedback_radiobutton_second"
@@ -53,7 +53,7 @@
             android:textColor="@color/black"
             android:fontFamily="sans-serif-medium"
             android:layout_marginBottom="15dp"
-            android:buttonTint="@color/gojekGreen"/>
+            android:buttonTint="@color/green"/>
 
     </RadioGroup>
 

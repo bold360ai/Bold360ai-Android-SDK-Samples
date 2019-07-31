@@ -3,6 +3,7 @@
     <color name="colorPrimary">#3F51B5</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#303F9F</color>
-    <color name="gojekGreen">#45ab4a</color>
-    <color name="gojekGreenLight">#91cc59</color>
+    <color name="green">#45ab4a</color>
+    <color name="greenLight">#91cc59</color>
+    <color name="black">#000000</color>
 </resources>
