@@ -18,7 +18,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nanorep.nanoclient.AccountParams;
@@ -74,9 +73,6 @@ public class MainActivity extends AppCompatActivity {
         final CheckBox openLinksInternallyCheckBox = findViewById(R.id.openLinksInternallyCheckBox);
         final CheckBox contextExclusivity = findViewById(R.id.contextExclusivity);
 
-        final TextView versionName = findViewById(R.id.versionName);
-        versionName.setText(nanorep.nanowidget.BuildConfig.VERSION_NAME);
-        
         contextExclusivity.setChecked(false);
         openLinksInternallyCheckBox.setChecked(true);
         labelCheckBox.setChecked(true);
