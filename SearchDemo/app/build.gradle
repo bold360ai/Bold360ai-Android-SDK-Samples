@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId "nanorep.nanoandroidwidgetdemoapp"
-        minSdkVersion 16
+        minSdkVersion 19
         targetSdkVersion 28
         versionCode 1
     }
@@ -27,8 +27,8 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.nanorep.search:ui:2.0.1'
-    implementation 'com.nanorep.search:engine:2.0.1'
+    implementation 'com.nanorep.search:ui:2.0.2'
+    implementation 'com.nanorep.search:engine:2.0.2'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation "com.android.support:design:$androidSupportVer"
