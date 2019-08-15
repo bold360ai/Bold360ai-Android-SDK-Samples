@@ -65,7 +65,7 @@
         android:gravity="top"
         android:padding="6dp"
         android:textColor="@color/black"
-        android:textColorHint="@color/go_jek_grey"
+        android:textColorHint="@color/grey"
         android:inputType="textCapSentences"
         android:layout_marginBottom="12dp"/>
 

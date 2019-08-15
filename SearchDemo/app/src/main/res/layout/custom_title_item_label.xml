@@ -37,7 +37,6 @@
             android:fontFamily="sans-serif-light"
             android:gravity="center_vertical|start"
             android:maxLines="2"
-            android:text="title"
             android:textAllCaps="false"
             android:textSize="14sp"
             android:textColor="#4a4a4a"
