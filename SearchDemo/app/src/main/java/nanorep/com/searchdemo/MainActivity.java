@@ -87,6 +87,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                enableButtons(false);
+
                 isFromDeepLink = true;
 
                 // Get account params from the fields:
@@ -129,6 +131,8 @@ public class MainActivity extends AppCompatActivity {
         startSDKButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View button) {
+
+                enableButtons(false);
 
                 isFromDeepLink = false;
 
@@ -283,6 +287,8 @@ public class MainActivity extends AppCompatActivity {
                 .addToBackStack(null)
                 .commit();
 
+        getSupportFragmentManager().executePendingTransactions();
+
         deepLinkProgressBar.setVisibility(View.INVISIBLE);
         deepLinkButton.setVisibility(View.VISIBLE);
     }
@@ -300,6 +306,8 @@ public class MainActivity extends AppCompatActivity {
                 .addToBackStack(null)
                 .commit();
 
+        getSupportFragmentManager().executePendingTransactions();
+
         startSDKProgressBar.setVisibility(View.INVISIBLE);
         startSDKButton.setVisibility(View.VISIBLE);
     }
@@ -315,11 +323,13 @@ public class MainActivity extends AppCompatActivity {
             if (isFromDeepLink) {
                 if (TextUtils.isDigitsOnly(articleIdForDeepLinking)) {
                     onDeepLinking(articleIdForDeepLinking);
+                    enableButtons(true);
                 } else {
                     Toast.makeText(MainActivity.this, "Invalid ArticleID", Toast.LENGTH_SHORT).show();
                 }
             } else {
                 openMainFragment();
+                enableButtons(true);
             }
         }
 
@@ -408,6 +418,11 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+
+    void enableButtons(boolean enable) {
+        startSDKButton.setClickable(enable);
+        deepLinkButton.setClickable(enable);
+    }
 
     private void hideKeyboard(View view) {
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
