@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -41,6 +42,7 @@ import nanorep.nanowidget.Components.AbstractViews.dislikeDialog.NRCustomDislike
 import nanorep.nanowidget.Components.NRDislikeDialog;
 import nanorep.nanowidget.Fragments.DeepLinkFragment;
 import nanorep.nanowidget.Fragments.NRMainFragment;
+import nanorep.nanowidget.Fragments.ResultsFragment;
 import nanorep.nanowidget.SearchInjector;
 import nanorep.nanowidget.SearchViewsProvider;
 
@@ -55,12 +57,16 @@ public class MainActivity extends AppCompatActivity {
     private Button deepLinkButton;
     private String articleIdForDeepLinking;
     public static Boolean isFromDeepLink = false;
+    private Boolean killedBySystem = false;
+    private FragmentManager fragmentManager;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(nanorep.com.searchdemo.R.layout.activity_main);
+
+        fragmentManager = getSupportFragmentManager();
 
         initWidgetListener();
         initViewsProvider();
@@ -271,7 +277,7 @@ public class MainActivity extends AppCompatActivity {
         Map<String, String> map = new HashMap<>();
         map.put("number", "122222");
 
-        DeepLinkFragment deepLinkFragment = DeepLinkFragment.newInstance(articleId, nanorepInstance, new DeepLinkFragment.deepLinkingServicesProvider() {
+        DeepLinkFragment deepLinkFragment = DeepLinkFragment.newInstance(articleId, new DeepLinkFragment.deepLinkingServicesProvider() {
 
             @Override
             public Nanorep.NanoRepWidgetListener getWidgetListener() {
@@ -288,7 +294,7 @@ public class MainActivity extends AppCompatActivity {
 
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.content_main, deepLinkFragment, articleId)
+                .replace(R.id.activity_content_main, deepLinkFragment, articleId)
                 .addToBackStack(null)
                 .commit();
 
@@ -298,20 +304,36 @@ public class MainActivity extends AppCompatActivity {
         deepLinkButton.setVisibility(View.VISIBLE);
     }
 
-    private void openMainFragment() {
+    private void openSearchFragment() {
 
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.content_main, NRMainFragment.newInstance(new SearchInjector() {
-                    @Override
-                    public SearchViewsProvider getUiProvider() {
-                        return myViewsProvider;
-                    }
-                }), NRMainFragment.TAG)
-                .addToBackStack(null)
-                .commit();
+        View view = getCurrentFocus();
+        if (view != null) {
+            view.clearFocus();
+        }
 
-        getSupportFragmentManager().executePendingTransactions();
+        if (Nanorep.getInstance().getAccountParams().isLabelsMode()) {
+            fragmentManager
+                    .beginTransaction()
+                    .replace(R.id.activity_content_main, NRMainFragment.newInstance(new SearchInjector() {
+                        @Override
+                        public SearchViewsProvider getUiProvider() {
+                            return myViewsProvider;
+                        }
+                    }), NRMainFragment.TAG)
+                    .addToBackStack(null)
+                    .commit();
+        } else {
+            fragmentManager
+                    .beginTransaction()
+                    .replace(R.id.activity_content_main, ResultsFragment.newInstance(new SearchInjector() {
+                        @Override
+                        public SearchViewsProvider getUiProvider() {
+                            return myViewsProvider;
+                        }
+                    }),  ResultsFragment.TAG)
+                    .addToBackStack(null)
+                    .commit();
+        }
 
         startSDKProgressBar.setVisibility(View.INVISIBLE);
         startSDKButton.setVisibility(View.VISIBLE);
@@ -333,7 +355,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Invalid ArticleID", Toast.LENGTH_SHORT).show();
                 }
             } else {
-                openMainFragment();
+                openSearchFragment();
                 enableButtons(true);
             }
         }
@@ -363,7 +385,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onEmptyDataResponse() {
-            openMainFragment();
+            openSearchFragment();
         }
 
         /**
@@ -444,6 +466,16 @@ public class MainActivity extends AppCompatActivity {
             nanorepInstance = null;
         }
 
+        if (!killedBySystem) {
+            Nanorep.clearInstance();
+        }
+
         super.onDestroy();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        killedBySystem = true;
+        super.onSaveInstanceState(outState);
     }
 }
