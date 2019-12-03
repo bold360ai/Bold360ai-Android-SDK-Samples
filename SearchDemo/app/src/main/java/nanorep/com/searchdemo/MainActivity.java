@@ -156,14 +156,6 @@ public class MainActivity extends AppCompatActivity {
                 enableButtons(false);
 
                 isFromDeepLink = false;
-
-//                accountNameEditText.setText("gojek");
-//                knowledgeBaseEditText.setText("English");
-//
-                accountNameEditText.setText("Skrill");
-                knowledgeBaseEditText.setText("---Staging---");
-//                knowledgeBaseEditText.setText("Conversational");
-                apiKeyEditText.setText("961ce682-9f70-4b9a-b809-2a338714c31b");
 //
                 // Get the account params from the fields:
                 String accountName = accountNameEditText.getText().toString();
