@@ -1,9 +1,5 @@
 apply plugin: 'com.android.application'
 
-repositories {
-
-}
-
 android {
     compileSdkVersion 28
     buildToolsVersion '28.0.3'
@@ -27,10 +23,9 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'com.nanorep.search:ui:2.0.5'
-    implementation 'com.nanorep.search:engine:2.0.5'
+    implementation 'com.nanorep.search:ui:2.1.1'
+    implementation 'com.nanorep.search:engine:2.1.1'
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    implementation "com.android.support:design:$androidSupportVer"
     implementation "com.android.support:design:$androidSupportVer"
 }

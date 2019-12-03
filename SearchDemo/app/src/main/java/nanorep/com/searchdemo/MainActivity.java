@@ -19,6 +19,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -40,6 +41,7 @@ import nanorep.nanowidget.Components.AbstractViews.ViewIdsFactory;
 import nanorep.nanowidget.Components.AbstractViews.dislikeDialog.DislikeConfiguration;
 import nanorep.nanowidget.Components.AbstractViews.dislikeDialog.NRCustomDislikeDialog;
 import nanorep.nanowidget.Components.NRDislikeDialog;
+import nanorep.nanowidget.DataClass.FAQDataSource;
 import nanorep.nanowidget.Fragments.DeepLinkFragment;
 import nanorep.nanowidget.Fragments.NRMainFragment;
 import nanorep.nanowidget.Fragments.ResultsFragment;
@@ -52,13 +54,14 @@ public class MainActivity extends AppCompatActivity {
     private ProgressBar deepLinkProgressBar;
     private SearchViewsProvider myViewsProvider;
     private Nanorep.NanoRepWidgetListener widgetListener;
+    private DeepLinkFragment deepLinkFragment;
     private Nanorep nanorepInstance;
     private Button startSDKButton;
     private Button deepLinkButton;
     private String articleIdForDeepLinking;
     public static Boolean isFromDeepLink = false;
     private Boolean killedBySystem = false;
-    private FragmentManager fragmentManager;
+    private FAQDataSource supportCenterDataSource;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -66,17 +69,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(nanorep.com.searchdemo.R.layout.activity_main);
 
-        fragmentManager = getSupportFragmentManager();
-
         initWidgetListener();
         initViewsProvider();
 
         final EditText accountNameEditText = findViewById(R.id.accountNameEditText);
         final EditText knowledgeBaseEditText = findViewById(R.id.knowledgebaseEditText);
+        final EditText apiKeyEditText = findViewById(R.id.apiKeyEditText);
         final EditText nrContextEditText = findViewById(R.id.nrContextEditText);
         final EditText deepLinkingArticleId = findViewById(R.id.deeplinkEditText);
 
-        final CheckBox labelCheckBox = findViewById(R.id.labelModeCheckbox);
+        final RadioGroup searchModes = findViewById(R.id.searchModes);
         final CheckBox openLinksInternallyCheckBox = findViewById(R.id.openLinksInternallyCheckBox);
         final CheckBox contextExclusivity = findViewById(R.id.contextExclusivity);
 
@@ -86,7 +88,6 @@ public class MainActivity extends AppCompatActivity {
 
         contextExclusivity.setChecked(false);
         openLinksInternallyCheckBox.setChecked(true);
-        labelCheckBox.setChecked(true);
 
         startSDKButton = findViewById(R.id.goButton);
         deepLinkButton = findViewById(R.id.deepLinkButton);
@@ -106,6 +107,8 @@ public class MainActivity extends AppCompatActivity {
                 String accountName = accountNameEditText.getText().toString();
                 String knowledgeBase = knowledgeBaseEditText.getText().toString();
                 articleIdForDeepLinking = deepLinkingArticleId.getText().toString();
+                String apiKey = apiKeyEditText.getText().toString();
+                String articleId = deepLinkingArticleId.getText().toString();
 
                 hideKeyboard(view);
 
@@ -136,6 +139,13 @@ public class MainActivity extends AppCompatActivity {
 
                 // Init Nanorep using the account params
                 initializeNanorep(accountParams);
+
+                accountParams.setApiKey(apiKey);
+
+                accountParams.setOpenLinksInternally(openLinksInternallyCheckBox.isChecked());
+
+                onDeepLinking(articleId);
+
             }
         });
 
@@ -147,9 +157,18 @@ public class MainActivity extends AppCompatActivity {
 
                 isFromDeepLink = false;
 
-                // Get account params from the fields:
+//                accountNameEditText.setText("gojek");
+//                knowledgeBaseEditText.setText("English");
+//
+                accountNameEditText.setText("Skrill");
+                knowledgeBaseEditText.setText("---Staging---");
+//                knowledgeBaseEditText.setText("Conversational");
+                apiKeyEditText.setText("961ce682-9f70-4b9a-b809-2a338714c31b");
+//
+                // Get the account params from the fields:
                 String accountName = accountNameEditText.getText().toString();
                 String knowledgeBase = knowledgeBaseEditText.getText().toString();
+                String apiKey = apiKeyEditText.getText().toString();
 
                 if (accountName.isEmpty()) {
                     accountNameEditText.requestFocus();
@@ -165,9 +184,7 @@ public class MainActivity extends AppCompatActivity {
 
                 AccountParams accountParams = new AccountParams(accountName, knowledgeBase);
 
-                accountParams.setOpenLinksInternally(openLinksInternallyCheckBox.isChecked());
-                accountParams.setContextExclusivity(contextExclusivity.isChecked());
-                accountParams.setLabelsMode(labelCheckBox.isChecked());
+                accountParams.setApiKey(apiKey);
 
                 // Get the selected context:
                 // For example: Service: "MY-SEARCH-CONTEXT"
@@ -177,10 +194,28 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 // Set the account params properties
+                switch (searchModes.getCheckedRadioButtonId()) {
+                    case R.id.labelsMode:  {
+                        accountParams.setLabelsMode(true);
+                        accountParams.setSupportCenterMode(false);
+                    }
+                    break;
+
+                    case R.id.supportCenterMode: {
+                        accountParams.setLabelsMode(false);
+                        accountParams.setSupportCenterMode(true);
+                    }
+                    break;
+
+                    default: {
+                        accountParams.setLabelsMode(false);
+                        accountParams.setSupportCenterMode(false);
+                    }
+                }
+
                 accountParams.setOpenLinksInternally(openLinksInternallyCheckBox.isChecked());
                 accountParams.setContextExclusivity(contextExclusivity.isChecked());
-                accountParams.setLabelsMode(labelCheckBox.isChecked());
-
+                
                 // Init Nanorep using the account params
                 initializeNanorep(accountParams);
 
@@ -252,7 +287,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public int getLabelItemTitleLayout() {
+            public int getLabelItemLayout() {
                 return R.layout.custom_title_item_label;
             }
 
@@ -304,41 +339,6 @@ public class MainActivity extends AppCompatActivity {
         deepLinkButton.setVisibility(View.VISIBLE);
     }
 
-    private void openSearchFragment() {
-
-        View view = getCurrentFocus();
-        if (view != null) {
-            view.clearFocus();
-        }
-
-        if (Nanorep.getInstance().getAccountParams().isLabelsMode()) {
-            fragmentManager
-                    .beginTransaction()
-                    .replace(R.id.activity_content_main, NRMainFragment.newInstance(new SearchInjector() {
-                        @Override
-                        public SearchViewsProvider getUiProvider() {
-                            return myViewsProvider;
-                        }
-                    }), NRMainFragment.TAG)
-                    .addToBackStack(null)
-                    .commit();
-        } else {
-            fragmentManager
-                    .beginTransaction()
-                    .replace(R.id.activity_content_main, ResultsFragment.newInstance(new SearchInjector() {
-                        @Override
-                        public SearchViewsProvider getUiProvider() {
-                            return myViewsProvider;
-                        }
-                    }),  ResultsFragment.TAG)
-                    .addToBackStack(null)
-                    .commit();
-        }
-
-        startSDKProgressBar.setVisibility(View.INVISIBLE);
-        startSDKButton.setVisibility(View.VISIBLE);
-    }
-
     class MyWidgetListener implements Nanorep.NanoRepWidgetListener {
 
         /**
@@ -346,7 +346,7 @@ public class MainActivity extends AppCompatActivity {
          */
         @Override
         public void onConfigurationFetched() {
-            startSDKProgressBar.setVisibility(View.INVISIBLE);
+
             if (isFromDeepLink) {
                 if (TextUtils.isDigitsOnly(articleIdForDeepLinking)) {
                     onDeepLinking(articleIdForDeepLinking);
@@ -446,9 +446,60 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    void enableButtons(boolean enable) {
-        startSDKButton.setClickable(enable);
-        deepLinkButton.setClickable(enable);
+    private void openSearchFragment() {
+
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        if (fragmentManager == null) {
+            return;
+        }
+
+        View view = getCurrentFocus();
+        if (view != null) {
+            view.clearFocus();
+        }
+
+        if (Nanorep.getInstance().getAccountParams().isLabelsMode()) {
+
+            NRMainFragment mainFragment = NRMainFragment.newInstance(new SearchInjector() {
+                @Override
+                public SearchViewsProvider getUiProvider() {
+                    return myViewsProvider;
+                }
+            });
+
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.activity_content_main, mainFragment, NRMainFragment.TAG)
+                    .addToBackStack(null)
+                    .commit();
+
+        }  else if (Nanorep.getInstance().getAccountParams().isSupportCenterMode()){
+
+            supportCenterDataSource = new FAQDataSource();
+
+            fragmentManager
+                .beginTransaction()
+                .replace(R.id.activity_content_main, ResultsFragment.newInstance(null, supportCenterDataSource, myViewsProvider),  ResultsFragment.TAG)
+                .addToBackStack(null)
+                .commit();
+
+        } else { // Start with Faqs mode
+
+            fragmentManager
+                .beginTransaction()
+                .replace(R.id.activity_content_main, ResultsFragment.newInstance(new SearchInjector() {
+                    @Override
+                    public SearchViewsProvider getUiProvider() {
+                        return myViewsProvider;
+                    }
+                }),  ResultsFragment.TAG)
+                .addToBackStack(null)
+                .commit();
+        }
+
+        startSDKProgressBar.setVisibility(View.INVISIBLE);
+        startSDKButton.setVisibility(View.VISIBLE);
     }
 
     private void hideKeyboard(View view) {
@@ -457,6 +508,12 @@ public class MainActivity extends AppCompatActivity {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
+
+    void enableButtons(boolean enable) {
+        startSDKButton.setClickable(enable);
+        deepLinkButton.setClickable(enable);
+    }
+
 
     @Override
     protected void onDestroy() {
@@ -468,9 +525,12 @@ public class MainActivity extends AppCompatActivity {
 
         if (!killedBySystem) {
             Nanorep.clearInstance();
-        }
+            if (supportCenterDataSource != null && getSupportFragmentManager().findFragmentByTag(ResultsFragment.TAG) == null) {
+                supportCenterDataSource.onDestroy();
+            }
 
-        super.onDestroy();
+            super.onDestroy();
+        }
     }
 
     @Override

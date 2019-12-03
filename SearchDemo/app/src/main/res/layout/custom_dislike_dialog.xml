@@ -43,7 +43,7 @@
             android:checked="true"
             android:textColor="@color/black"
             android:layout_marginBottom="15dp"
-            android:buttonTint="@color/green" />
+            android:buttonTint="@color/blue" />
 
         <RadioButton
             android:id="@+id/feedback_radiobutton_second"
@@ -53,7 +53,7 @@
             android:textColor="@color/black"
             android:fontFamily="sans-serif-medium"
             android:layout_marginBottom="15dp"
-            android:buttonTint="@color/green"/>
+            android:buttonTint="@color/blue"/>
 
     </RadioGroup>
 
