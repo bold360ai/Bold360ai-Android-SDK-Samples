@@ -520,9 +520,10 @@ public class MainActivity extends AppCompatActivity {
             if (supportCenterDataSource != null && getSupportFragmentManager().findFragmentByTag(ResultsFragment.TAG) == null) {
                 supportCenterDataSource.onDestroy();
             }
-
-            super.onDestroy();
         }
+
+        super.onDestroy();
+
     }
 
     @Override
