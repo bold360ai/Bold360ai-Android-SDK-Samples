@@ -30,7 +30,7 @@
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp">
+                    android:layout_marginBottom="4dp">
 
                     <android.support.design.widget.TextInputEditText
                         android:id="@+id/accountNameEditText"
@@ -46,7 +46,7 @@
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp">
+                    android:layout_marginBottom="4dp">
 
                     <android.support.design.widget.TextInputEditText
                         android:id="@+id/knowledgebaseEditText"
@@ -62,7 +62,7 @@
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp">
+                    android:layout_marginBottom="4dp">
 
                     <android.support.design.widget.TextInputEditText
                         android:id="@+id/apiKeyEditText"
@@ -78,7 +78,7 @@
                 <android.support.design.widget.TextInputLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp">
+                    android:layout_marginBottom="4dp">
 
                     <android.support.design.widget.TextInputEditText
                         android:id="@+id/nrContextEditText"
@@ -97,14 +97,14 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="6dp"
+                android:layout_marginTop="4dp"
                 android:orientation="vertical">
 
                 <RadioGroup
                     android:id="@+id/searchModes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="5dp">
+                    android:layout_marginBottom="4dp">
 
                     <RadioButton
                         android:id="@+id/supportCenterMode"
@@ -132,14 +132,14 @@
                     android:id="@+id/contextExclusivity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
+                    android:layout_margin="4dp"
                     android:text="Context Exclusivity" />
 
                 <CheckBox
                     android:id="@+id/openLinksInternallyCheckBox"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="5dp"
+                    android:layout_marginStart="4dp"
                     android:text="open links internally" />
 
             </LinearLayout>
@@ -155,7 +155,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginBottom="18dp">
+                    android:layout_marginBottom="4dp">
 
                     <ProgressBar
                         android:id="@+id/startSDKProgressBar"
@@ -179,7 +179,6 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="40dp"
                     android:layout_marginLeft="40dp"
-                    android:layout_marginTop="10dp"
                     android:layout_marginEnd="40dp"
                     android:layout_marginRight="40dp"
                     android:orientation="horizontal">
@@ -189,9 +188,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginEnd="10dp"
-                        android:layout_marginRight="10dp"
+                        android:layout_marginLeft="4dp"
+                        android:layout_marginEnd="4dp"
+                        android:layout_marginRight="4dp"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:hint="valid article Id"

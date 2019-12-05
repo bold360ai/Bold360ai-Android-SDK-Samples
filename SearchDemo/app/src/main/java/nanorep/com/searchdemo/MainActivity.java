@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
@@ -50,18 +51,19 @@ import nanorep.nanowidget.SearchViewsProvider;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static Boolean isFromDeepLink = false;
+    private Boolean killedBySystem = false;
+
     private ProgressBar startSDKProgressBar;
     private ProgressBar deepLinkProgressBar;
     private SearchViewsProvider myViewsProvider;
     private Nanorep.NanoRepWidgetListener widgetListener;
-    private DeepLinkFragment deepLinkFragment;
     private Nanorep nanorepInstance;
     private Button startSDKButton;
     private Button deepLinkButton;
     private String articleIdForDeepLinking;
-    public static Boolean isFromDeepLink = false;
-    private Boolean killedBySystem = false;
     private FAQDataSource supportCenterDataSource;
+    private FragmentManager fragmentManager;
 
     @SuppressLint("SetJavaScriptEnabled")
     @Override
@@ -85,15 +87,13 @@ public class MainActivity extends AppCompatActivity {
         final TextView versionName = findViewById(R.id.versionName);
         versionName.setText(nanorep.nanowidget.BuildConfig.VERSION_NAME);
 
-
-        contextExclusivity.setChecked(false);
-        openLinksInternallyCheckBox.setChecked(true);
-
         startSDKButton = findViewById(R.id.goButton);
         deepLinkButton = findViewById(R.id.deepLinkButton);
 
         startSDKProgressBar = findViewById(R.id.startSDKProgressBar);
         deepLinkProgressBar = findViewById(R.id.deeplinkProgressBar);
+
+        fragmentManager = getSupportFragmentManager();
 
         deepLinkButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,14 +103,13 @@ public class MainActivity extends AppCompatActivity {
 
                 isFromDeepLink = true;
 
+                hideKeyboard(view);
+
                 // Get account params from the fields:
                 String accountName = accountNameEditText.getText().toString();
                 String knowledgeBase = knowledgeBaseEditText.getText().toString();
                 articleIdForDeepLinking = deepLinkingArticleId.getText().toString();
                 String apiKey = apiKeyEditText.getText().toString();
-                String articleId = deepLinkingArticleId.getText().toString();
-
-                hideKeyboard(view);
 
                 if (accountName.length() == 0) {
                     accountNameEditText.requestFocus();
@@ -130,21 +129,27 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
-                deepLinkProgressBar.setVisibility(View.VISIBLE);
-                deepLinkButton.setVisibility(View.INVISIBLE);
-
                 // Set the account params properties
                 AccountParams accountParams = new AccountParams(accountName, knowledgeBase);
+                accountParams.setApiKey(apiKey);
+
+                // Get the selected context:
+                // For example: Service: "MY-SEARCH-CONTEXT"
+                String nrContext = nrContextEditText.getText().toString();
+                if(nrContext.length() > 0) {
+                    accountParams.setContext(nrContext);
+                }
+
                 accountParams.setOpenLinksInternally(openLinksInternallyCheckBox.isChecked());
+                accountParams.setContextExclusivity(contextExclusivity.isChecked());
+
+                accountParams.setHost("qa07");
 
                 // Init Nanorep using the account params
                 initializeNanorep(accountParams);
 
-                accountParams.setApiKey(apiKey);
-
-                accountParams.setOpenLinksInternally(openLinksInternallyCheckBox.isChecked());
-
-                onDeepLinking(articleId);
+                deepLinkProgressBar.setVisibility(View.VISIBLE);
+                deepLinkButton.setVisibility(View.INVISIBLE);
 
             }
         });
@@ -174,8 +179,8 @@ public class MainActivity extends AppCompatActivity {
                     return;
                 }
 
+                // Set the account params properties
                 AccountParams accountParams = new AccountParams(accountName, knowledgeBase);
-
                 accountParams.setApiKey(apiKey);
 
                 // Get the selected context:
@@ -185,8 +190,8 @@ public class MainActivity extends AppCompatActivity {
                     accountParams.setContext(nrContext);
                 }
 
-                // Set the account params properties
                 switch (searchModes.getCheckedRadioButtonId()) {
+
                     case R.id.labelsMode:  {
                         accountParams.setLabelsMode(true);
                         accountParams.setSupportCenterMode(false);
@@ -207,7 +212,7 @@ public class MainActivity extends AppCompatActivity {
 
                 accountParams.setOpenLinksInternally(openLinksInternallyCheckBox.isChecked());
                 accountParams.setContextExclusivity(contextExclusivity.isChecked());
-                
+
                 // Init Nanorep using the account params
                 initializeNanorep(accountParams);
 
@@ -228,11 +233,12 @@ public class MainActivity extends AppCompatActivity {
         widgetListener = new MyWidgetListener();
     }
 
+    /**
+     *   Search views provider initialization - The views provider is being used to enable the views to be overridden by the customer.
+     *   All the views options are available at the Nanorep search documentation under "customize views".
+     *   If not set, the customer can use "new SearchInjector.DefaultsInjector().getUiProvider()" to get the default views provider .
+     */
     private void initViewsProvider() {
-
-        // Search views provider initialization - The views provider is being used to enable the views to be overridden by the customer
-        // All the views options are available at the Nanorep search documentation under "customize views"
-        // If not set, the customer can use "new SearchInjector.DefaultsInjector().getUiProvider()" to get the default views provider
 
         myViewsProvider = new SearchViewsProvider() {
             @Override
@@ -295,43 +301,7 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
-    /**
-     * Opens an independent fragment for a given articleId and account params
-     * @param articleId
-     */
-    public void onDeepLinking(String articleId){
-
-        Map<String, String> map = new HashMap<>();
-        map.put("number", "122222");
-
-        DeepLinkFragment deepLinkFragment = DeepLinkFragment.newInstance(articleId, new DeepLinkFragment.deepLinkingServicesProvider() {
-
-            @Override
-            public Nanorep.NanoRepWidgetListener getWidgetListener() {
-                return null;
-            }
-
-            @Override
-            public SearchViewsProvider getSearchViewsProvider() {
-                return myViewsProvider;
-            }
-        });
-
-        deepLinkFragment.setArticleExtraData(map);
-
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.activity_content_main, deepLinkFragment, articleId)
-                .addToBackStack(null)
-                .commit();
-
-        getSupportFragmentManager().executePendingTransactions();
-
-        deepLinkProgressBar.setVisibility(View.INVISIBLE);
-        deepLinkButton.setVisibility(View.VISIBLE);
-    }
-
-    class MyWidgetListener implements Nanorep.NanoRepWidgetListener {
+    private class MyWidgetListener implements Nanorep.NanoRepWidgetListener {
 
         /**
          * Nanorep instance is ready to use
@@ -341,14 +311,12 @@ public class MainActivity extends AppCompatActivity {
 
             if (isFromDeepLink) {
                 if (TextUtils.isDigitsOnly(articleIdForDeepLinking)) {
-                    onDeepLinking(articleIdForDeepLinking);
-                    enableButtons(true);
+                    openDeepLinkFragment();
                 } else {
                     Toast.makeText(MainActivity.this, "Invalid ArticleID", Toast.LENGTH_SHORT).show();
                 }
             } else {
-                openSearchFragment();
-                enableButtons(true);
+                openNavigationFragment();
             }
         }
 
@@ -377,7 +345,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onEmptyDataResponse() {
-            openSearchFragment();
+            openNavigationFragment();
         }
 
         /**
@@ -438,9 +406,46 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    private void openSearchFragment() {
+    /**
+     * Opens an independent fragment for a given articleId and account params
+     */
+    public void openDeepLinkFragment(){
 
-        FragmentManager fragmentManager = getSupportFragmentManager();
+        Map<String, String> map = new HashMap<>();
+        map.put("number", "122222");
+
+        DeepLinkFragment deepLinkFragment = DeepLinkFragment.newInstance(articleIdForDeepLinking, new DeepLinkFragment.deepLinkingServicesProvider() {
+
+            @Override
+            public Nanorep.NanoRepWidgetListener getWidgetListener() {
+                return null;
+            }
+
+            @Override
+            public SearchViewsProvider getSearchViewsProvider() {
+                return myViewsProvider;
+            }
+        });
+
+        deepLinkFragment.setArticleExtraData(map);
+
+        fragmentManager
+                .beginTransaction()
+                .replace(R.id.activity_content_main, deepLinkFragment, articleIdForDeepLinking)
+                .addToBackStack(null)
+                .commit();
+
+        fragmentManager.executePendingTransactions();
+
+        deepLinkProgressBar.setVisibility(View.INVISIBLE);
+        deepLinkButton.setVisibility(View.VISIBLE);
+        enableButtons(true);
+    }
+
+    /**
+     * The Search SDK navigation fragments
+     */
+    private void openNavigationFragment() {
 
         if (fragmentManager == null) {
             return;
@@ -451,47 +456,52 @@ public class MainActivity extends AppCompatActivity {
             view.clearFocus();
         }
 
+        Fragment fragment;
+        String tag;
+
         if (Nanorep.getInstance().getAccountParams().isLabelsMode()) {
 
-            NRMainFragment mainFragment = NRMainFragment.newInstance(new SearchInjector() {
+            tag = NRMainFragment.TAG;
+
+            fragment = NRMainFragment.newInstance(new SearchInjector() {
                 @Override
                 public SearchViewsProvider getUiProvider() {
                     return myViewsProvider;
                 }
             });
 
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.activity_content_main, mainFragment, NRMainFragment.TAG)
-                    .addToBackStack(null)
-                    .commit();
+        }  else {
 
-        }  else if (Nanorep.getInstance().getAccountParams().isSupportCenterMode()){
+            tag = ResultsFragment.TAG;
 
-            supportCenterDataSource = new FAQDataSource();
+            if (Nanorep.getInstance().getAccountParams().isSupportCenterMode()){
 
-            fragmentManager
-                .beginTransaction()
-                .replace(R.id.activity_content_main, ResultsFragment.newInstance(null, supportCenterDataSource, myViewsProvider),  ResultsFragment.TAG)
-                .addToBackStack(null)
-                .commit();
+                supportCenterDataSource = new FAQDataSource();
 
-        } else { // Start with Faqs mode
+                fragment =  ResultsFragment.newInstance(null, supportCenterDataSource, myViewsProvider);
 
-            fragmentManager
-                .beginTransaction()
-                .replace(R.id.activity_content_main, ResultsFragment.newInstance(new SearchInjector() {
+            } else { // Start with Faqs mode
+
+                fragment = ResultsFragment.newInstance(new SearchInjector() {
                     @Override
                     public SearchViewsProvider getUiProvider() {
                         return myViewsProvider;
                     }
-                }),  ResultsFragment.TAG)
+                });
+            }
+        }
+
+        fragmentManager
+                .beginTransaction()
+                .replace(R.id.activity_content_main, fragment, tag)
                 .addToBackStack(null)
                 .commit();
-        }
+
+        fragmentManager.executePendingTransactions();
 
         startSDKProgressBar.setVisibility(View.INVISIBLE);
         startSDKButton.setVisibility(View.VISIBLE);
+        enableButtons(true);
     }
 
     private void hideKeyboard(View view) {
