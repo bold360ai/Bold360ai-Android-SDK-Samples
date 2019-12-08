@@ -142,9 +142,7 @@ public class MainActivity extends AppCompatActivity {
 
                 accountParams.setOpenLinksInternally(openLinksInternallyCheckBox.isChecked());
                 accountParams.setContextExclusivity(contextExclusivity.isChecked());
-
-                accountParams.setHost("qa07");
-
+                
                 // Init Nanorep using the account params
                 initializeNanorep(accountParams);
 
